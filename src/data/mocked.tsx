@@ -1,93 +1,32 @@
 const menuItems = [
   {
-    title: "Usuários",
+    title: "Posts",
     actions: [
       {
-        title: "Cadastrar usuário",
-        link: "cadastrar-usuario",
+        title: "Cadastrar post",
+        link: "cadastrar-post",
       },
       {
-        title: "Gerenciar usuários",
-        link: "gerenciar-usuarios",
-      },
-    ],
-    icon: "users",
-  },
-  {
-    title: "Cursos",
-    actions: [
-      {
-        title: "Cadastrar curso",
-        link: "cadastrar-curso",
-      },
-      {
-        title: "Gerenciar cursos",
-        link: "gerenciar-cursos",
+        title: "Gerenciar posts",
+        link: "gerenciar-posts",
       },
     ],
     icon: "book-open",
   },
+
   {
-    title: "Módulos",
+    title: "Autores",
     actions: [
       {
-        title: "Cadastrar módulo",
-        link: "cadastrar-modulo",
+        title: "Cadastrar autor",
+        link: "cadastrar-autor",
       },
       {
-        title: "Gerenciar módulos",
-        link: "gerenciar-modulos",
-      },
-    ],
-    icon: "book",
-  },
-  {
-    title: "Tutores",
-    actions: [
-      {
-        title: "Cadastrar tutor",
-        link: "cadastrar-tutor",
-      },
-      {
-        title: "Gerenciar tutores",
-        link: "gerenciar-tutores",
+        title: "Gerenciar autores",
+        link: "gerenciar-autores",
       },
     ],
     icon: "user-check",
-  },
-  {
-    title: "Videoaulas",
-    actions: [
-      {
-        title: "Cadastrar videoaula",
-        link: "cadastrar-videoaula",
-      },
-      {
-        title: "Gerenciar videoaulas",
-        link: "gerenciar-videoaulas",
-      },
-    ],
-    icon: "play-circle",
-  },
-  {
-    title: "Certificados",
-    actions: [
-      {
-        title: "Consultar certificados",
-        link: "consultar-certificados",
-      },
-    ],
-    icon: "star",
-  },
-  {
-    title: "Outras ações",
-    actions: [
-      {
-        title: "Acompanhar progresso do usuário",
-        link: "acompanhar-progresso-do-usuario",
-      }
-    ],
-    icon: "plus-circle",
   },
 ];
 

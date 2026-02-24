@@ -5,7 +5,7 @@ const EMAIL_INVALID_MESSAGE = "Email inválido";
 const CPF_INVALID_MESSAGE = "CPF inválido";
 const PHONE_INVALID_MESSAGE = "Telefone inválido";
 const BIRTH_DATE_INVALID_MESSAGE = "Data inválida";
-const DESCRIPTION_MIN_MESSAGE = "A descrição está muito curta";
+const DESCRIPTION_MIN_MESSAGE = "A descrição da biografia está muito curta";
 const MIN_PASSWORD_LENGTH = 8;
 const FILE_MAX_SIZE_MESSAGE =
   "Arquivo muito grande. O arquivo deve ter no máximo ";

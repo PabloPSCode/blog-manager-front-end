@@ -37,7 +37,12 @@ export function UploadedFile({ file, onCancel }: UploadedFileProps) {
         </span>
       </div>
       {type && type.includes("image") ? (
-        <img src={uri} alt={name} width={160} />
+        <img
+          src={uri}
+          alt={name}
+          width={160}
+          className="w-24 h-24 sm:h-32 sm:w-32 rounded-full object-cover"
+        />
       ) : (
         <video
           src={uri}

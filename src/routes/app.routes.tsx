@@ -5,8 +5,8 @@ import { Home } from "@/screens/app/Home";
 import { DashboardLayout } from "@/screens/app/layout";
 import { ManageCourses } from "@/screens/app/ManageCourses";
 import { ManageTutors } from "@/screens/app/ManageTutors";
+import { RegisterAuthor } from "@/screens/app/RegisterAuthor";
 import { RegisterCourse } from "@/screens/app/RegisterCourse";
-import { RegisterTutor } from "@/screens/app/RegisterTutor";
 import { ErrorPage } from "@/screens/error";
 import { ReactNode } from "react";
 
@@ -38,7 +38,7 @@ const appRoutesBase: route[] = [
   },
   {
     path: "/dashboard/cadastrar-autor",
-    element: <RegisterTutor />,
+    element: <RegisterAuthor />,
   },
   {
     path: "/dashboard/gerenciar-autores",

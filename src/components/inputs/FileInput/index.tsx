@@ -8,7 +8,17 @@ interface FileInputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const FileInput = forwardRef<HTMLInputElement, FileInputProps>(
-  ({ label, labelDescription, buttonTitle, onUpload, ...rest }, ref) => {
+  (
+    { label, labelDescription, buttonTitle, onUpload, onChange, ...rest },
+    ref
+  ) => {
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+      onChange?.(event);
+      if (onUpload && onUpload !== onChange) {
+        onUpload(event);
+      }
+    };
+
     return (
       <div className="flex flex-col w-full">
         <span className="text-black dark:text-white text-[12px] lg:text-sm mb-1">
@@ -22,7 +32,7 @@ export const FileInput = forwardRef<HTMLInputElement, FileInputProps>(
         <input
           className="opacity-0 mb-[-52px] cursor-pointer z-10 w-full h-[52px]"
           ref={ref}
-          onChange={onUpload}
+          onChange={handleChange}
           type="file"
           {...rest}
         />

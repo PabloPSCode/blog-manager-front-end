@@ -29,7 +29,7 @@ module.exports = withMT({
       }
     },
     fontFamily: {
-      primary: ["Roboto", "sans-serif"],
+      primary: ["Montserrat", "sans-serif"],
       secondary: ["Poppins", "sans-serif"],
     },
     screens: {

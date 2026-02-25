@@ -1,8 +1,8 @@
-import { ICourse } from "./Course";
+import { IPost } from "./Post";
 
 export interface ICertificate {
   user: {
     name: string;
   };
-  course: ICourse;
+  course: IPost;
 }

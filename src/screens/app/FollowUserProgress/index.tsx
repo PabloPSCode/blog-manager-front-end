@@ -3,7 +3,7 @@ import { ScreenTitleIcon } from "@/components/miscellaneous/ScreenTitleIcon";
 import { Subtitle } from "@/components/typography/Subtitle";
 import { userMetrics } from "@/data/mocked";
 import { useState } from "react";
-import { CourseProgressCard } from "./components/CourseProgressCard";
+import { PostProgressCard } from "./components/CourseProgressCard";
 
 export function FollowUserProgress() {
   const [selectedUser, setSelectedUser] = useState("");
@@ -53,8 +53,8 @@ export function FollowUserProgress() {
         >
           {selectedUserMetrics.map((metric) =>
             metric.user.courses.map((course) => (
-              <CourseProgressCard
-                totalCourseClasses={course.totalCourseClasses}
+              <PostProgressCard
+                totalPostClasses={course.totalPostClasses}
                 totalWatchedClasses={course.totalWatchedClasses}
                 key={course.name}
                 course={course.name}

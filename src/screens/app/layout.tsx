@@ -78,7 +78,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
   const handleOpenedAccordionIndexes = (idx: number) => {
     const filteredAccordionIndexes = openedAccordionIndexes.filter(
-      (index) => index !== idx
+      (index) => index !== idx,
     );
 
     if (openedAccordionIndexes.includes(idx)) {
@@ -156,6 +156,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               className="mb-8"
             />
           </Link>
+          <Title content="Gerenciador de Blogs" />
           {menuItems.map((item, idx) => (
             <Accordion
               className="flex flex-col"
@@ -252,8 +253,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           <div className="mt-[96px]">{children}</div>
           <footer className="flex bg-gray-100 dark:bg-slate-800 items-center justify-center md:p-8 px-2 my-8 mx-auto">
             <CompanyFooterLink
-              companyText="Desenvolvido por PS Code. Acesse nosso site "
-              companyLink="https://www.pablosilvadev.com.br"
+              companyText="Desenvolvido por PLS Sistemas. Acesse nosso site "
+              companyLink="https://www.plssistemas.com.br"
             />
           </footer>
         </div>

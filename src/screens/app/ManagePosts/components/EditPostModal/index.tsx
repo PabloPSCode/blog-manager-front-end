@@ -12,21 +12,27 @@ import {
 import { KeyboardEvent, MouseEvent } from "react";
 import Modal from "react-modal";
 
-interface EditCourseModalProps {
+interface EditPostModalProps {
   isOpen: boolean;
+  post: {
+    id: string;
+    title: string;
+    description: string;
+  } | null;
   onRequestClose: (
     event: MouseEvent<Element, MouseEvent> | KeyboardEvent<Element>
   ) => void;
-  onConfirmAction: (param: any) => void;
+  onConfirmAction: () => void;
   onClose: () => void;
 }
 
-export function EditCourseModal({
+export function EditPostModal({
   isOpen,
+  post,
   onRequestClose,
   onConfirmAction,
   onClose,
-}: EditCourseModalProps) {
+}: EditPostModalProps) {
   const { theme } = useThemeStore();
 
   return (
@@ -38,27 +44,36 @@ export function EditCourseModal({
       }
     >
       <Title
-        content="Atualização dos dados do curso"
+        content="Atualização dos dados do post"
         className="text-center text-black dark:text-white mb-4 font-bold text-[14px] md:text-lg"
       />
       <Subtitle
-        content="Você pode alterar o nome, descrição e imagem de capa do curso"
+        content="Você pode alterar título, conteúdo e imagem de capa do post"
         className="text-center text-gray-700 dark:text-gray-100  text-[13px] md:text-[14px]"
       />
-
-      <div className="my-4">
-        <TextInput inputLabel="Nome" placeholder="Novo nome do curso" />
+      <div key={post?.id ?? "post-form"}>
+        <div className="my-4">
+          <TextInput
+            inputLabel="Título"
+            placeholder="Novo título do post"
+            defaultValue={post?.title}
+          />
+        </div>
+        <div className="my-4">
+          <TextAreaInput
+            label="Conteúdo"
+            placeholder="Conteúdo do post"
+            defaultValue={post?.description}
+          />
+        </div>
+        <div className="mt-4 mb-8">
+          <FileInput
+            label="Capa do post"
+            labelDescription="Tamanho máximo do arquivo: 2MB"
+            buttonTitle="Trocar capa do post"
+          />
+        </div>
       </div>
-      <div className="my-4">
-        <TextAreaInput label="Descrição" placeholder="Descrição do curso" />
-      </div>
-      <div className="mt-4 mb-8">
-        <FileInput
-          label="Capa do curso"
-          labelDescription="Tamanho máximo do arquivo: 2MB"
-        />
-      </div>
-
       <Button title="Salvar dados" onClick={onConfirmAction} />
       <button
         onClick={onClose}

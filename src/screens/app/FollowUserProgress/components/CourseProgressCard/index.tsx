@@ -1,18 +1,18 @@
 import { collapseLongString } from "@/utils/formats";
 
-interface CourseProgressCardProps {
-  totalCourseClasses: number;
+interface PostProgressCardProps {
+  totalPostClasses: number;
   totalWatchedClasses: number;
   course: string;
 }
 
-export function CourseProgressCard({
+export function PostProgressCard({
   course,
-  totalCourseClasses,
+  totalPostClasses,
   totalWatchedClasses,
-}: CourseProgressCardProps) {
+}: PostProgressCardProps) {
   const totalWatchedClassesPercentage = Math.floor(
-    Number((totalWatchedClasses / totalCourseClasses) * 100)
+    Number((totalWatchedClasses / totalPostClasses) * 100)
   ).toFixed(0);
 
   return (
@@ -34,7 +34,7 @@ export function CourseProgressCard({
         </span>
         <span className="text-gray-700 dark:text-gray-100 text-xs font-bold">
           {" "}
-          {totalWatchedClasses} de {totalCourseClasses} aulas assistidas
+          {totalWatchedClasses} de {totalPostClasses} aulas assistidas
         </span>
       </div>
     </div>

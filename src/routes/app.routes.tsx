@@ -4,11 +4,11 @@ import { NotFound } from "@/screens/404";
 import { Home } from "@/screens/app/Home";
 import { DashboardLayout } from "@/screens/app/layout";
 import { ManageAuthors } from "@/screens/app/ManageAuthors";
-import { ManageCourses } from "@/screens/app/ManageCourses";
-import { RegisterAuthor } from "@/screens/app/RegisterAuthor";
-import { RegisterCourse } from "@/screens/app/RegisterCourse";
+import { ManagePosts } from "@/screens/app/ManagePosts";
+import { RegisterPost } from "@/screens/app/RegisterPost";
 import { ErrorPage } from "@/screens/error";
 import { ReactNode } from "react";
+import { RegisterAuthor } from "@/screens/app/RegisterAuthor";
 
 type route = {
   path: string;
@@ -30,11 +30,11 @@ const appRoutesBase: route[] = [
   },
   {
     path: "/dashboard/cadastrar-post",
-    element: <RegisterCourse />,
+    element: <RegisterPost />,
   },
   {
     path: "/dashboard/gerenciar-posts",
-    element: <ManageCourses />,
+    element: <ManagePosts />,
   },
   {
     path: "/dashboard/cadastrar-autor",

@@ -23,8 +23,8 @@ export const AuthenticationLayout: React.FC<AuthenticationLayoutProps> = ({
             <img src={logo_text} alt="logo_text" width={200} height={120} />
             <div className="flex flex-col lg:flex-row w-full mt-6 mb-2 justify-center">
               <CompanyFooterLink
-                companyText="Desenvolvido por PS Code. Acesse nosso site "
-                companyLink="https://www.pablosilvadev.com.br"
+                companyText="Desenvolvido por PLS Sistemas. Acesse nosso site "
+                companyLink="https://www.plssistemas.com.br"
               />
             </div>
           </div>

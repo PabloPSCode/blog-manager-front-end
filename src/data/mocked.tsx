@@ -11,7 +11,7 @@ const menuItems = [
         link: "gerenciar-posts",
       },
     ],
-    icon: "book-open",
+    icon: "file-text",
   },
 
   {
@@ -78,6 +78,89 @@ const authors = [
     name: "Juliana Rocha",
     photoUrl: "https://i.pravatar.cc/160?img=25",
     bio: "Especialista em storytelling para marcas digitais, com enfase em posicionamento, autoridade e conexao com audiencia.",
+  },
+];
+
+const posts = [
+  {
+    id: "1",
+    title: "Como criar anuncios que realmente vendem",
+    readingTime: "2 min",
+    authorName: "Pablo Silva",
+    coverUrl:
+      "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=900&q=80",
+    description:
+      "Guia pratico para criar anuncios com foco em conversao usando estrutura, clareza e provas de valor.",
+  },
+  {
+    id: "2",
+    title: "Erros comuns em copy para redes sociais",
+    readingTime: "3 min",
+    authorName: "Ana Beatriz Souza",
+    coverUrl:
+      "https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=80",
+    description:
+      "Veja como evitar erros de linguagem, oferta e CTA que reduzem resultado em campanhas digitais.",
+  },
+  {
+    id: "3",
+    title: "Guia de SEO para blogs de nicho",
+    readingTime: "4 min",
+    authorName: "Mateus Oliveira",
+    coverUrl:
+      "https://images.unsplash.com/photo-1484417894907-623942c8ee29?auto=format&fit=crop&w=900&q=80",
+    description:
+      "Passo a passo para melhorar posicionamento organico com pesquisa de termos e estrategia editorial.",
+  },
+  {
+    id: "4",
+    title: "Estrutura ideal para um post tecnico",
+    readingTime: "2 min",
+    authorName: "Carolina Ferreira",
+    coverUrl:
+      "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&w=900&q=80",
+    description:
+      "Aprenda a organizar contexto, problema, solucao e exemplos para aumentar retencao de leitura.",
+  },
+  {
+    id: "5",
+    title: "Como montar calendario editorial mensal",
+    readingTime: "5 min",
+    authorName: "Lucas Mendes",
+    coverUrl:
+      "https://images.unsplash.com/photo-1432821596592-e2c18b78144f?auto=format&fit=crop&w=900&q=80",
+    description:
+      "Modelo simples para planejar pautas, responsabilidades e frequencia com consistencia ao longo do mes.",
+  },
+  {
+    id: "6",
+    title: "Checklist de qualidade para publicacao",
+    readingTime: "3 min",
+    authorName: "Fernanda Alves",
+    coverUrl:
+      "https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=900&q=80",
+    description:
+      "Checklist de revisao final para garantir clareza, legibilidade, links validos e boa experiencia do leitor.",
+  },
+  {
+    id: "7",
+    title: "Titulos que aumentam taxa de clique",
+    readingTime: "2 min",
+    authorName: "Rafael Costa",
+    coverUrl:
+      "https://images.unsplash.com/photo-1503676260728-1c00da094a0b?auto=format&fit=crop&w=900&q=80",
+    description:
+      "Tecnicas de escrita para criar titulos objetivos sem clickbait, mantendo relevancia e interesse.",
+  },
+  {
+    id: "8",
+    title: "Como transformar pauta em conteudo de valor",
+    readingTime: "4 min",
+    authorName: "Juliana Rocha",
+    coverUrl:
+      "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=900&q=80",
+    description:
+      "Estruture pesquisa, contexto e exemplos práticos para produzir textos com valor real para a audiencia.",
   },
 ];
 
@@ -1361,7 +1444,7 @@ const userMetrics = [
         {
           name: "React Native 2.0",
           totalWatchedClasses: 45,
-          totalCourseClasses: 120,
+          totalPostClasses: 120,
         },
       ],
     },
@@ -1373,12 +1456,12 @@ const userMetrics = [
         {
           name: "React para Iniciantes",
           totalWatchedClasses: 78,
-          totalCourseClasses: 110,
+          totalPostClasses: 110,
         },
         {
           name: "React Native para Iniciantes",
           totalWatchedClasses: 54,
-          totalCourseClasses: 120,
+          totalPostClasses: 120,
         },
       ],
     },
@@ -1390,7 +1473,7 @@ const userMetrics = [
         {
           name: "NodeJS Avançado",
           totalWatchedClasses: 60,
-          totalCourseClasses: 100,
+          totalPostClasses: 100,
         },
       ],
     },
@@ -1402,7 +1485,7 @@ const userMetrics = [
         {
           name: "Vue.js Essencial",
           totalWatchedClasses: 90,
-          totalCourseClasses: 120,
+          totalPostClasses: 120,
         },
       ],
     },
@@ -1414,7 +1497,7 @@ const userMetrics = [
         {
           name: "Angular para Iniciantes",
           totalWatchedClasses: 40,
-          totalCourseClasses: 90,
+          totalPostClasses: 90,
         },
       ],
     },
@@ -1426,7 +1509,7 @@ const userMetrics = [
         {
           name: "Python para Data Science",
           totalWatchedClasses: 50,
-          totalCourseClasses: 150,
+          totalPostClasses: 150,
         },
       ],
     },
@@ -1438,7 +1521,7 @@ const userMetrics = [
         {
           name: "Java Completo",
           totalWatchedClasses: 85,
-          totalCourseClasses: 200,
+          totalPostClasses: 200,
         },
       ],
     },
@@ -1450,7 +1533,7 @@ const userMetrics = [
         {
           name: "C# para Desenvolvimento de Jogos",
           totalWatchedClasses: 30,
-          totalCourseClasses: 80,
+          totalPostClasses: 80,
         },
       ],
     },
@@ -1462,7 +1545,7 @@ const userMetrics = [
         {
           name: "Swift para iOS",
           totalWatchedClasses: 55,
-          totalCourseClasses: 170,
+          totalPostClasses: 170,
         },
       ],
     },
@@ -1474,7 +1557,7 @@ const userMetrics = [
         {
           name: "Kotlin para Android",
           totalWatchedClasses: 65,
-          totalCourseClasses: 120,
+          totalPostClasses: 120,
         },
       ],
     },
@@ -1486,7 +1569,7 @@ const userMetrics = [
         {
           name: "Flutter e Dart",
           totalWatchedClasses: 40,
-          totalCourseClasses: 100,
+          totalPostClasses: 100,
         },
       ],
     },
@@ -1498,7 +1581,7 @@ const userMetrics = [
         {
           name: "Desenvolvimento Web com Django",
           totalWatchedClasses: 70,
-          totalCourseClasses: 150,
+          totalPostClasses: 150,
         },
       ],
     },
@@ -1510,7 +1593,7 @@ const userMetrics = [
         {
           name: "Ruby on Rails",
           totalWatchedClasses: 50,
-          totalCourseClasses: 120,
+          totalPostClasses: 120,
         },
       ],
     },
@@ -1522,7 +1605,7 @@ const userMetrics = [
         {
           name: "SQL para Análise de Dados",
           totalWatchedClasses: 80,
-          totalCourseClasses: 100,
+          totalPostClasses: 100,
         },
       ],
     },
@@ -1534,7 +1617,7 @@ const userMetrics = [
         {
           name: "MongoDB para Desenvolvedores",
           totalWatchedClasses: 40,
-          totalCourseClasses: 90,
+          totalPostClasses: 90,
         },
       ],
     },
@@ -1546,7 +1629,7 @@ const userMetrics = [
         {
           name: "TypeScript Avançado",
           totalWatchedClasses: 90,
-          totalCourseClasses: 150,
+          totalPostClasses: 150,
         },
       ],
     },
@@ -1558,7 +1641,7 @@ const userMetrics = [
         {
           name: "DevOps com Docker",
           totalWatchedClasses: 50,
-          totalCourseClasses: 100,
+          totalPostClasses: 100,
         },
       ],
     },
@@ -1570,7 +1653,7 @@ const userMetrics = [
         {
           name: "Introdução ao Kubernetes",
           totalWatchedClasses: 30,
-          totalCourseClasses: 50,
+          totalPostClasses: 50,
         },
       ],
     },
@@ -1582,7 +1665,7 @@ const userMetrics = [
         {
           name: "GraphQL para Desenvolvedores",
           totalWatchedClasses: 70,
-          totalCourseClasses: 120,
+          totalPostClasses: 120,
         },
       ],
     },
@@ -1594,7 +1677,7 @@ const userMetrics = [
         {
           name: "Inteligência Artificial com Python",
           totalWatchedClasses: 100,
-          totalCourseClasses: 200,
+          totalPostClasses: 200,
         },
       ],
     },
@@ -1609,6 +1692,7 @@ export {
   dashboardMetrics,
   menuItems,
   modules,
+  posts,
   tutors,
   userMetrics,
   users,

@@ -8,19 +8,19 @@ import { ICertificate } from "@/interfaces/dtos/Certificate";
 import { collapseLongString } from "@/utils/formats";
 import { sortCertificates } from "@/utils/sorting";
 import {
-  Button,
-  Card,
-  CardBody,
-  CardFooter,
-  IconButton,
-  Tooltip,
+    Button,
+    Card,
+    CardBody,
+    CardFooter,
+    IconButton,
+    Tooltip,
 } from "@material-tailwind/react";
 import { useCallback, useEffect, useState } from "react";
 import {
-  MdKeyboardDoubleArrowLeft,
-  MdKeyboardDoubleArrowRight,
-  MdOutlineFileDownload,
-  MdZoomIn,
+    MdKeyboardDoubleArrowLeft,
+    MdKeyboardDoubleArrowRight,
+    MdOutlineFileDownload,
+    MdZoomIn,
 } from "react-icons/md";
 
 const TABLE_HEAD = [
@@ -42,14 +42,14 @@ export function CertificatesTable({
 }: CertificatesTableProps) {
   const [page, setPage] = useState(1);
   const [pagesListIndex, setPagesListIndex] = useState(0);
-  const [sortedCourses, setSortedCourses] = useState<ICertificate[]>([]);
+  const [sortedPosts, setSortedPosts] = useState<ICertificate[]>([]);
   const [tableData, setTableData] = useState<ICertificate[]>([]);
   const [itemsPerPage, setItemsPerPage] = useState(
     itemsPerPageOptions[0].value
   );
 
   const pages = Array.from(
-    { length: Math.ceil(sortedCourses.length / itemsPerPage) },
+    { length: Math.ceil(sortedPosts.length / itemsPerPage) },
     (_, idx) => idx + 1
   );
 
@@ -63,11 +63,11 @@ export function CertificatesTable({
   const currentTableData = useCallback(() => {
     const startIndex = (page - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    setTableData(sortedCourses.slice(startIndex, endIndex) as never);
-  }, [itemsPerPage, page, sortedCourses]);
+    setTableData(sortedPosts.slice(startIndex, endIndex) as never);
+  }, [itemsPerPage, page, sortedPosts]);
 
   useEffect(() => {
-    setSortedCourses(certificates);
+    setSortedPosts(certificates);
   }, [certificates]);
 
   useEffect(() => {
@@ -80,7 +80,7 @@ export function CertificatesTable({
 
   const handleSort = (propRef: string, sortType: "asc" | "desc") => {
     const sortedData = sortCertificates([...certificates], propRef, sortType);
-    setSortedCourses(sortedData);
+    setSortedPosts(sortedData);
     setPage(1);
   };
 
@@ -222,15 +222,15 @@ export function CertificatesTable({
                     pagesListIndex * MAX_PAGES_TO_SHOW,
                     MAX_PAGES_TO_SHOW * (pagesListIndex + 1)
                   )
-                  .map((CoursePage) => (
+                  .map((PostPage) => (
                     <IconButton
-                      key={CoursePage}
-                      variant={page === CoursePage ? "outlined" : "text"}
+                      key={PostPage}
+                      variant={page === PostPage ? "outlined" : "text"}
                       size="sm"
-                      onClick={() => setPage(CoursePage)}
+                      onClick={() => setPage(PostPage)}
                       className="text-[11px] lg:text-sm w-6 h-6 lg:w-8 lg:h-8 mr-2 mt-2 text-gray-700 dark:text-gray-300 shadow-none dark:border-1 dark:border-gray-200"
                     >
-                      {CoursePage}
+                      {PostPage}
                     </IconButton>
                   ))}
                 {canGoToNextSet && (
@@ -245,15 +245,15 @@ export function CertificatesTable({
                 )}
               </div>
             ) : (
-              pages.map((CoursePage) => (
+              pages.map((PostPage) => (
                 <IconButton
-                  key={CoursePage}
-                  variant={page === CoursePage ? "outlined" : "text"}
+                  key={PostPage}
+                  variant={page === PostPage ? "outlined" : "text"}
                   size="sm"
-                  onClick={() => setPage(CoursePage)}
+                  onClick={() => setPage(PostPage)}
                   className="text-[11px] lg:text-sm w-6 h-6 lg:w-8 lg:h-8 mr-2 mt-2 text-gray-700 dark:text-gray-300 shadow-none dark:border-1 dark:border-gray-200"
                 >
-                  {CoursePage}
+                  {PostPage}
                 </IconButton>
               ))
             )}

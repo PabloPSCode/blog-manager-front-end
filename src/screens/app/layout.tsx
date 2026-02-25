@@ -14,7 +14,6 @@ import {
   Accordion,
   AccordionBody,
   AccordionHeader,
-  Avatar,
   Breadcrumbs,
   Button,
   ListItem,
@@ -234,11 +233,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                   <MdLightMode className="h-5 w-5 text-slate-800 dark:text-gray-100 mr-4 sm:mr-8" />
                 )}
               </button>
-              <Avatar
-                src="https://docs.material-tailwind.com/img/face-2.jpg"
-                alt="avatar"
-                size="sm"
-              />
+
               <button
                 className="flex flex-row justify-between items-center p-2 ml-3"
                 onClick={handleToggleLogoutModal}

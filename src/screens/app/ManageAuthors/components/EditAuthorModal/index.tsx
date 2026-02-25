@@ -1,33 +1,35 @@
 import { Button } from "@/components/buttons/Button";
-import { MaskedTextInput } from "@/components/inputs/MaskedTextInput";
+import { FileInput } from "@/components/inputs/FileInput";
 import { TextAreaInput } from "@/components/inputs/TextAreaInput";
 import { TextInput } from "@/components/inputs/TextInput";
 import { Subtitle } from "@/components/typography/Subtitle";
 import { Title } from "@/components/typography/Title";
+import { IAuthor } from "@/interfaces/dtos/Author";
 import { useThemeStore } from "@/store/theme";
 import {
   reactModalCustomStyles,
   reactModalCustomStylesDark,
 } from "@/styles/react-modal";
-import { phoneMask } from "@/utils/masks";
 import { KeyboardEvent, MouseEvent } from "react";
 import Modal from "react-modal";
 
-interface EditTutorModalProps {
+interface EditAuthorModalProps {
   isOpen: boolean;
+  author: IAuthor | null;
   onRequestClose: (
     event: MouseEvent<Element, MouseEvent> | KeyboardEvent<Element>
   ) => void;
-  onConfirmAction: (param: any) => void;
+  onConfirmAction: () => void;
   onClose: () => void;
 }
 
-export function EditTutorModal({
+export function EditAuthorModal({
   isOpen,
+  author,
   onRequestClose,
   onConfirmAction,
   onClose,
-}: EditTutorModalProps) {
+}: EditAuthorModalProps) {
   const { theme } = useThemeStore();
 
   return (
@@ -39,28 +41,34 @@ export function EditTutorModal({
       }
     >
       <Title
-        content="Atualização dos dados do tutor"
+        content="Atualização dos dados do autor"
         className="text-center text-black dark:text-white mb-4 font-bold text-[14px] md:text-lg"
       />
       <Subtitle
-        content="Você pode alterar dados de nome, telefone e/ou biografia do tutor"
+        content="Você pode alterar nome, biografia e foto do autor"
         className="text-center text-gray-700 dark:text-gray-100  text-[13px] md:text-[14px]"
       />
-      <div className="my-4">
-        <TextInput inputLabel="Nome" placeholder="Nome do tutor" />
-      </div>
-      <div className="my-4">
-        <MaskedTextInput
-          mask={phoneMask}
-          inputLabel="Telefone"
-          placeholder="Novo número de telefone"
-        />
-      </div>
-      <div className="my-4">
-        <TextAreaInput
-          label="Biografia"
-          placeholder="Novo biografia do tutor"
-        />
+      <div key={author?.id ?? "author-form"}>
+        <div className="my-4">
+          <TextInput
+            inputLabel="Nome"
+            placeholder="Nome do autor"
+            defaultValue={author?.name}
+          />
+        </div>
+        <div className="my-4">
+          <TextAreaInput
+            label="Biografia"
+            placeholder="Biografia do autor"
+            defaultValue={author?.bio}
+          />
+        </div>
+        <div className="mb-8 mt-4">
+          <FileInput
+            label="Foto do autor"
+            buttonTitle="Trocar foto do autor"
+          />
+        </div>
       </div>
       <Button title="Salvar dados" onClick={onConfirmAction} />
       <button

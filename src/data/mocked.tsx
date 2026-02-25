@@ -30,6 +30,57 @@ const menuItems = [
   },
 ];
 
+const authors = [
+  {
+    id: "1",
+    name: "Pablo Silva",
+    photoUrl: "https://i.pravatar.cc/160?img=12",
+    bio: "Modelo de landing page para imobiliarias, arquitetos e designers de casas com foco em sofisticacao e acolhimento.",
+  },
+  {
+    id: "2",
+    name: "Ana Beatriz Souza",
+    photoUrl: "https://i.pravatar.cc/160?img=47",
+    bio: "Especialista em conteudo editorial para tecnologia, liderando projetos com foco em clareza, consistencia e impacto.",
+  },
+  {
+    id: "3",
+    name: "Mateus Oliveira",
+    photoUrl: "https://i.pravatar.cc/160?img=68",
+    bio: "Autor com experiencia em UX writing e documentacao tecnica para produtos digitais e plataformas educacionais.",
+  },
+  {
+    id: "4",
+    name: "Carolina Ferreira",
+    photoUrl: "https://i.pravatar.cc/160?img=5",
+    bio: "Produz artigos sobre arquitetura de software, padroes de projeto e boas praticas para times de engenharia.",
+  },
+  {
+    id: "5",
+    name: "Lucas Mendes",
+    photoUrl: "https://i.pravatar.cc/160?img=13",
+    bio: "Criador de conteudo para marketing de produto, com foco em funis de conversao e comunicacao orientada a dados.",
+  },
+  {
+    id: "6",
+    name: "Fernanda Alves",
+    photoUrl: "https://i.pravatar.cc/160?img=32",
+    bio: "Escreve sobre carreira em tecnologia, onboarding de profissionais e desenvolvimento continuo de habilidades.",
+  },
+  {
+    id: "7",
+    name: "Rafael Costa",
+    photoUrl: "https://i.pravatar.cc/160?img=57",
+    bio: "Atua com producao de conteudo para plataformas de ensino, cobrindo trilhas, cursos e experiencias de aprendizado.",
+  },
+  {
+    id: "8",
+    name: "Juliana Rocha",
+    photoUrl: "https://i.pravatar.cc/160?img=25",
+    bio: "Especialista em storytelling para marcas digitais, com enfase em posicionamento, autoridade e conexao com audiencia.",
+  },
+];
+
 const users = [
   {
     name: "John Doe",
@@ -1551,6 +1602,7 @@ const userMetrics = [
 ];
 
 export {
+  authors,
   certificates,
   classes,
   courses,

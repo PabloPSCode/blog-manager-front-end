@@ -3,8 +3,8 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { NotFound } from "@/screens/404";
 import { Home } from "@/screens/app/Home";
 import { DashboardLayout } from "@/screens/app/layout";
+import { ManageAuthors } from "@/screens/app/ManageAuthors";
 import { ManageCourses } from "@/screens/app/ManageCourses";
-import { ManageTutors } from "@/screens/app/ManageTutors";
 import { RegisterAuthor } from "@/screens/app/RegisterAuthor";
 import { RegisterCourse } from "@/screens/app/RegisterCourse";
 import { ErrorPage } from "@/screens/error";
@@ -42,7 +42,7 @@ const appRoutesBase: route[] = [
   },
   {
     path: "/dashboard/gerenciar-autores",
-    element: <ManageTutors />,
+    element: <ManageAuthors />,
   },
 ];
 

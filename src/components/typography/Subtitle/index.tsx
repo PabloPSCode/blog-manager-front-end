@@ -6,7 +6,7 @@ interface SubtitleProps extends HTMLAttributes<HTMLHeadingElement> {
 export function Subtitle({ content, ...rest }: SubtitleProps) {
   return (
     <h3
-      className="text-gray-600 dark:text-gray-50 font-bold text-[12px] md:text-[14px]"
+      className="text-gray-600 dark:text-gray-50 font-bold text-[12px] md:text-[14px] font-primary"
       {...rest}
     >
       {content}

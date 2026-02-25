@@ -37,5 +37,8 @@ input{
   font-size: 13px;
 }
 
+h1, h2, h3, h4, h5, h6, p, span, a, li {
+  font-family: 'Montserrat', sans-serif;
+}
 
 

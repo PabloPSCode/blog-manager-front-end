@@ -1130,7 +1130,7 @@ const dashboardMetrics = [
   },
   {
     title: "Cursos publicados",
-    iconName: "book-open",
+    iconName: "file-text",
     metric: 12,
     link: "/dashboard/gerenciar-cursos",
   },
@@ -1685,15 +1685,16 @@ const userMetrics = [
 ];
 
 export {
-  authors,
-  certificates,
-  classes,
-  courses,
-  dashboardMetrics,
-  menuItems,
-  modules,
-  posts,
-  tutors,
-  userMetrics,
-  users,
+    authors,
+    certificates,
+    classes,
+    courses,
+    dashboardMetrics,
+    menuItems,
+    modules,
+    posts,
+    tutors,
+    userMetrics,
+    users
 };
+

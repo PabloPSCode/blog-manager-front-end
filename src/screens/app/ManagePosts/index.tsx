@@ -49,7 +49,7 @@ export function ManagePosts() {
       <div className="flex flex-col  w-full mx-auto xl:pr-8">
         <div className="mb-2 flex flex-row w-[full] justify-between items-center">
           <div className="mr-3 ml-4">
-            <ScreenTitleIcon screenTitle="Gerenciar posts" iconName="book-open" />
+            <ScreenTitleIcon screenTitle="Gerenciar posts" iconName="file-text" />
           </div>
           <div className="mr-4">
             <Link to="/dashboard/cadastrar-post">

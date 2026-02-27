@@ -164,6 +164,44 @@ const posts = [
   },
 ];
 
+const faqQuestions = [
+  {
+    question: "Como falar com o suporte?",
+    answer:
+      "Para falar com o suporte basta acessar o Whatsapp de contato do administrador do seu treinamento.",
+  },
+  {
+    question: "Como cadastrar um novo post?",
+    answer:
+      "Acesse a seção Posts, clique em Cadastrar post, preencha título, autor, conteúdo e imagem de capa e confirme o envio.",
+  },
+  {
+    question: "Como editar um autor já cadastrado?",
+    answer:
+      "Na tela Gerenciar autores, clique no ícone de edição do card do autor desejado para atualizar os dados.",
+  },
+  {
+    question: "Posso alterar a imagem de capa de um post?",
+    answer:
+      "Sim. Abra a tela Gerenciar posts, clique em editar e selecione uma nova imagem de capa no formulário de atualização.",
+  },
+  {
+    question: "Quais formatos de imagem são aceitos?",
+    answer:
+      "Os formulários aceitam imagens .jpg, .jpeg e .png, respeitando o limite de tamanho informado em cada campo.",
+  },
+  {
+    question: "Como compartilhar o meu site?",
+    answer:
+      "Você pode usar o link de compartilhamento exibido no painel inicial e enviá-lo diretamente para seus clientes ou alunos.",
+  },
+  {
+    question: "Como saber se o site está online?",
+    answer:
+      "A informação de disponibilidade fica disponível no dashboard inicial, na seção Informações do site.",
+  },
+];
+
 const users = [
   {
     name: "John Doe",
@@ -1685,16 +1723,16 @@ const userMetrics = [
 ];
 
 export {
-    authors,
-    certificates,
-    classes,
-    courses,
-    dashboardMetrics,
-    menuItems,
-    modules,
-    posts,
+  authors,
+  certificates,
+  classes,
+  courses,
+  dashboardMetrics,
+  faqQuestions,
+  menuItems,
+  modules,
+  posts,
     tutors,
     userMetrics,
     users
 };
-

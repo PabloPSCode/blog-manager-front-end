@@ -1,5 +1,5 @@
 import { authors, posts } from "@/data/mocked";
-import { FiLink2, FiWifi } from "react-icons/fi";
+import { FiWifi } from "react-icons/fi";
 import { HiMiniDocumentText, HiUsers } from "react-icons/hi2";
 import { MdLanguage } from "react-icons/md";
 

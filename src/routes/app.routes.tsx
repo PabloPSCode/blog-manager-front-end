@@ -1,6 +1,7 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import { NotFound } from "@/screens/404";
+import { Faq } from "@/screens/app/Faq";
 import { Home } from "@/screens/app/Home";
 import { DashboardLayout } from "@/screens/app/layout";
 import { ManageAuthors } from "@/screens/app/ManageAuthors";
@@ -43,6 +44,10 @@ const appRoutesBase: route[] = [
   {
     path: "/dashboard/gerenciar-autores",
     element: <ManageAuthors />,
+  },
+  {
+    path: "/dashboard/perguntas-frequentes",
+    element: <Faq />,
   },
 ];
 

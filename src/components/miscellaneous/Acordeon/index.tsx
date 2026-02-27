@@ -70,7 +70,7 @@ const Accordeon: React.FC<AccordeonProps> = ({
       className={clsx(
         "w-full mx-auto",
         maxWidthClassName,
-        "rounded-lg border border-foreground/20 bg-background text-foreground shadow-sm",
+        "rounded-lg border border-primary bg-white dark:bg-slate-700/50 text-foreground dark:text-white shadow-sm",
         "p-3 sm:p-4",
         className
       )}

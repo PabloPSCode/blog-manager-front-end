@@ -195,6 +195,22 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               </AccordionBody>
             </Accordion>
           ))}
+          <Link
+            to="/dashboard/perguntas-frequentes"
+            className="mt-8 p-0 text-[13px] font-bold text-black dark:text-white w-full"
+          >
+            <ListItem
+              className="text-[12px] lg:text-[14px] text-black dark:text-white hover:text-slate-800 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-slate-800 focus:text-slate-800 dark:focus:text-gray-200 focus:bg-gray-200 dark:focus:bg-slate-800 font-secondary"
+            >
+              <FeatherIcon
+                icon="help-circle"
+                size={24}
+                className="text-black dark:text-white mr-2"
+                strokeWidth={1}
+              />
+              Central de ajuda
+            </ListItem>
+          </Link>
         </nav>
         <div className="flex flex-1 flex-col justify-between pb-0 bg-gray-100 dark:bg-slate-800 h-screen w-full overflow-y-auto">
           <header
@@ -348,6 +364,22 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               </AccordionBody>
             </Accordion>
           ))}
+          <Link
+            to="/dashboard/perguntas-frequentes"
+            className="mt-8 p-0 text-[12px] font-bold w-full"
+          >
+            <ListItem
+              className="text-[12px] lg:text-[14px] text-black dark:text-white hover:text-slate-800 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-slate-800 focus:text-slate-800 dark:focus:text-gray-200 focus:bg-gray-200 dark:focus:bg-slate-800"
+            >
+              <FeatherIcon
+                icon="help-circle"
+                size={24}
+                className="text-black dark:text-white mr-2"
+                strokeWidth={1}
+              />
+              Central de ajuda
+            </ListItem>
+          </Link>
         </nav>
       </Modal>
     </section>

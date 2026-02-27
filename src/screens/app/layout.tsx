@@ -155,7 +155,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               className="mb-8"
             />
           </Link>
-          <Title content="Gerenciador de Blogs" />
+          <Title content="GERENCIADOR DE BLOGS" className="mb-8 font-bold tracking-wide" />
           {menuItems.map((item, idx) => (
             <Accordion
               className="flex flex-col"

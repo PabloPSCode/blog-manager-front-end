@@ -166,11 +166,6 @@ const posts = [
 
 const faqQuestions = [
   {
-    question: "Como falar com o suporte?",
-    answer:
-      "Para falar com o suporte basta acessar o Whatsapp de contato do administrador do seu treinamento.",
-  },
-  {
     question: "Como cadastrar um novo post?",
     answer:
       "Acesse a seção Posts, clique em Cadastrar post, preencha título, autor, conteúdo e imagem de capa e confirme o envio.",
@@ -193,7 +188,7 @@ const faqQuestions = [
   {
     question: "Como compartilhar o meu site?",
     answer:
-      "Você pode usar o link de compartilhamento exibido no painel inicial e enviá-lo diretamente para seus clientes ou alunos.",
+      "Você pode usar o link de compartilhamento exibido no painel inicial.",
   },
   {
     question: "Como saber se o site está online?",
@@ -1732,7 +1727,7 @@ export {
   menuItems,
   modules,
   posts,
-    tutors,
-    userMetrics,
-    users
+  tutors,
+  userMetrics,
+  users,
 };

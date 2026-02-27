@@ -29,8 +29,8 @@ module.exports = withMT({
       }
     },
     fontFamily: {
-      primary: ["Montserrat", "sans-serif"],
-      secondary: ["Poppins", "sans-serif"],
+      primary: ["Oxanium", "sans-serif"],
+      secondary: ["Montserrat", "sans-serif"],
     },
     screens: {
       lg: "1080px",

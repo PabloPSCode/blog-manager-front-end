@@ -16,6 +16,7 @@
     "ckeditor5": "^47.5.0",
     "clsx": "^2.1.1",
     "feather-icons-react": "0.7.0",
+    "firebase": "^12.11.0",
     "react": "18.3.0",
     "react-countup": "6.5.3",
     "react-dom": "18.3.0",

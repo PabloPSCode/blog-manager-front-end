@@ -10,9 +10,10 @@ export function Home() {
     onlineSince: "12 de Janeiro de 2026",
   };
 
-  const envVar = import.meta.env.REACT_APP_FIREBASE_API_KEY
+  const envVar =
+    import.meta.env.VITE_FIREBASE_API_KEY
 
-  console.log("env var", envVar)
+  console.log("env var", envVar);
 
   return (
     <main className="flex flex-1 flex-col w-[90%] lg:w-full mx-auto lg:pl-8 bg-gray-100 dark:bg-slate-800">

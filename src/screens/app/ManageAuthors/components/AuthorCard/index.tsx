@@ -4,7 +4,7 @@ import { MdEdit } from "react-icons/md";
 interface AuthorCardProps {
   bio: string;
   name: string;
-  photoUrl: string;
+  photoUrl?: string;
   onEdit: () => void;
   onDelete: () => void;
   className?: string;
@@ -18,16 +18,24 @@ export function AuthorCard({
   onDelete,
   className,
 }: AuthorCardProps) {
+  const authorInitial = name.charAt(0).toUpperCase();
+
   return (
     <article
       className={`w-full min-h-[300px] bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700 p-5 flex flex-col ${className}`}
     >
       <header className="flex items-center">
-        <img
-          src={photoUrl}
-          alt={`Foto do autor ${name}`}
-          className="w-10 h-10 rounded-full object-cover bg-gray-300"
-        />
+        {photoUrl ? (
+          <img
+            src={photoUrl}
+            alt={`Foto do autor ${name}`}
+            className="w-10 h-10 rounded-full object-cover bg-gray-300"
+          />
+        ) : (
+          <div className="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center text-sm font-semibold">
+            {authorInitial}
+          </div>
+        )}
         <h3 className="text-gray-900 dark:text-gray-100 text-sm font-semibold ml-3">
           {name}
         </h3>

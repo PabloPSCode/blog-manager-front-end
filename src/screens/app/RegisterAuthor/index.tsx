@@ -9,9 +9,12 @@ import { TextAreaInput } from "@/components/inputs/TextAreaInput";
 import { TextInput } from "@/components/inputs/TextInput";
 import { ScreenTitleIcon } from "@/components/miscellaneous/ScreenTitleIcon";
 import { IFile, UploadedFile } from "@/components/miscellaneous/UploadedFile";
+import { authorsService } from "@/services/authors.service";
+import { showAlertError, showAlertSuccess } from "@/utils/alerts";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ChangeEvent, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 
 interface RegisterAuthorInputs {
@@ -23,6 +26,8 @@ interface RegisterAuthorInputs {
 export function RegisterAuthor() {
   const [uploadedFile, setUploadedFile] = useState<IFile | null>(null);
   const [wasFileUploaded, setWasFileUploaded] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   const MIN_TUTOR_BIO_LENGTH = 24;
   const MAX_TUTOR_BIO_LENGTH = 500;
@@ -35,8 +40,12 @@ export function RegisterAuthor() {
         "fileType",
         "A foto deve ser um arquivo de imagem (jpg, jpeg, png)",
         (value: any) => {
+          if (!value || value.length === 0) {
+            return true;
+          }
+
           const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
-          return value && value[0] && allowedTypes.includes(value[0].type);
+          return allowedTypes.includes(value[0].type);
         },
       ),
 
@@ -58,6 +67,7 @@ export function RegisterAuthor() {
     formState: { errors, isValid },
     watch,
     setValue,
+    reset,
   } = useForm<RegisterAuthorInputs>({
     resolver: yupResolver(validationSchema),
     mode: "onChange",
@@ -103,8 +113,34 @@ export function RegisterAuthor() {
     });
   };
 
-  const handleRegisterAuthor: SubmitHandler<RegisterAuthorInputs> = (data) => {
-    console.log({ ...data, photoUrl: uploadedFile?.uri ?? null });
+  const handleRegisterAuthor: SubmitHandler<RegisterAuthorInputs> = async (
+    data,
+  ) => {
+    try {
+      setIsSubmitting(true);
+
+      await authorsService.create({
+        name: data.name.trim(),
+        bio: data.bio.trim(),
+        avatarFile: data.photo_file?.[0] ?? null,
+      });
+
+      showAlertSuccess("Autor cadastrado com sucesso");
+      revokePreviewUrl(uploadedFile);
+      setUploadedFile(null);
+      setWasFileUploaded(false);
+      reset();
+      navigate("/dashboard/gerenciar-autores");
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Nao foi possivel cadastrar o autor.";
+
+      showAlertError(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -141,7 +177,7 @@ export function RegisterAuthor() {
             ) : (
               <FileInput
                 label="Foto do autor"
-                labelDescription="Selecione uma imagem .jpeg ou .png"
+                labelDescription="Selecione uma imagem .jpeg ou .png (opcional)"
                 placeholder="Selecione a foto do autor"
                 accept=".jpg,.jpeg,.png,image/jpeg,image/png"
                 onUpload={handleUploadFile}
@@ -170,7 +206,11 @@ export function RegisterAuthor() {
           </div>
           <div className="w-full mb-4"></div>
           <div className="w-full mt-2">
-            <Button title="Cadastrar Autor" type="submit" disabled={!isValid} />
+            <Button
+              title={isSubmitting ? "Cadastrando..." : "Cadastrar Autor"}
+              type="submit"
+              disabled={!isValid || isSubmitting}
+            />
           </div>
         </form>
       </div>

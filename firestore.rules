@@ -1,0 +1,42 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAuthorDocument(data) {
+      return data.keys().hasOnly([
+        "name",
+        "bio",
+        "siteId",
+        "avatarUrl",
+        "createdAt",
+        "updatedAt",
+        "deletedAt"
+      ]) &&
+      data.name is string &&
+      data.name.size() > 0 &&
+      data.bio is string &&
+      data.bio.size() > 0 &&
+      data.siteId is string &&
+      data.siteId == "pls-site-id" &&
+      data.avatarUrl is string &&
+      data.createdAt is string &&
+      data.updatedAt is string &&
+      (data.deletedAt == null || data.deletedAt is string);
+    }
+
+    match /authors/{authorId} {
+      allow get, list: if true;
+      allow create: if isAuthorDocument(request.resource.data) &&
+        request.resource.data.deletedAt == null;
+      allow update: if isAuthorDocument(request.resource.data) &&
+        resource.data.siteId == "pls-site-id" &&
+        request.resource.data.siteId == "pls-site-id" &&
+        request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

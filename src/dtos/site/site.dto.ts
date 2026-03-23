@@ -1,5 +1,5 @@
 import type { IPost } from "../post/post.dto";
-import type { IUser } from "../user/user.dto";
+import type { IAuthor } from "../author/author.dto";
 
 export const DEFAULT_SITE_PASSWORD = "PLSSistemas7963";
 
@@ -9,7 +9,7 @@ export interface ISite {
   domain: string;
   clientWhatsapp: string;
   posts?: IPost[];
-  authors?: IUser[];
+  authors?: IAuthor[];
   password: string;
   createdAt: string;
   updatedAt: string;

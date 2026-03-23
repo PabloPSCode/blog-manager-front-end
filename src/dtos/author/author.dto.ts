@@ -1,22 +1,25 @@
-export interface IUser {
+export interface IAuthor {
   id?: string;
   name: string;
   bio: string;
   siteId: string;
+  avatarUrl: string;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
 }
 
-export interface ICreateUserDTO {
+export interface ICreateAuthorDTO {
   name: string;
   bio: string;
   siteId: string;
+  avatarUrl: string;
 }
 
-export interface IUpdateUserDTO {
+export interface IUpdateAuthorDTO {
   id: string;
   name?: string;
   bio?: string;
   siteId?: string;
+  avatarUrl?: string;
 }

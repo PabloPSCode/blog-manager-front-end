@@ -1,4 +1,3 @@
-import { Title } from "@/components/typography/Title";
 import { useAuthenticationStore } from "@/store/auth";
 import { SignInForm, SignInFormInputs } from "./components/SignInForm";
 
@@ -11,11 +10,13 @@ export function InitialScreen() {
   };
 
   return (
-    <div className="flex flex-col lg:mt-[16vh] items-center lg:mb-2 mb-8">
-      <Title
-        content="Entrar na plataforma"
-        className="text-black dark:text-white mb-6 text-xl font-bold md:text-3xl font-secondary"
-      />
+    <div className="flex flex-col items-center w-full">
+      <h1 className="text-black dark:text-white text-center text-3xl md:text-5xl font-bold font-primary tracking-wide mb-10">
+        GERENCIADOR DE BLOGS
+      </h1>
+      <h2 className="text-black dark:text-white text-center text-xl md:text-2xl font-bold font-primary mb-6">
+        Entrar na plataforma
+      </h2>
       <SignInForm onSubmit={handleSignIn} />
     </div>
   );

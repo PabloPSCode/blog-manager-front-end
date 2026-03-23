@@ -17,7 +17,7 @@ export const PasswordTextInput = forwardRef<
   };
 
   return (
-    <div className="mb-2 w-full bg-yan-400">
+    <div className="mb-2 w-full">
       <span className="text-gray-800 dark:text-gray-200 text-[12px] lg:text-sm">
         {inputLabel}
       </span>

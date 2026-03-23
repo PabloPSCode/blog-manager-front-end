@@ -1,5 +1,4 @@
 import {
-  EMAIL_INVALID_MESSAGE,
   MIN_PASSWORD_LENGTH,
   PASSWORD_MIN_LENGTH_MESSAGE,
   REQUIRED_FIELD_MESSAGE,
@@ -13,8 +12,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import * as yup from "yup";
+
 export interface SignInFormInputs {
-  email: string;
+  domain: string;
   password: string;
 }
 
@@ -24,10 +24,7 @@ interface SignInFormProps {
 
 export function SignInForm({ onSubmit }: SignInFormProps) {
   const validationSchema = yup.object({
-    email: yup
-      .string()
-      .email(EMAIL_INVALID_MESSAGE)
-      .required(REQUIRED_FIELD_MESSAGE),
+    domain: yup.string().required(REQUIRED_FIELD_MESSAGE),
     password: yup
       .string()
       .required(REQUIRED_FIELD_MESSAGE)
@@ -38,7 +35,7 @@ export function SignInForm({ onSubmit }: SignInFormProps) {
     register,
     handleSubmit,
     formState: { errors, isValid },
-  } = useForm({
+  } = useForm<SignInFormInputs>({
     resolver: yupResolver(validationSchema),
     mode: "onBlur",
   });
@@ -49,37 +46,31 @@ export function SignInForm({ onSubmit }: SignInFormProps) {
 
   return (
     <form
-      className="max-w-lg bg-gray-50 dark:bg-slate-800  p-6 shadow-xl rounded-lg mx-auto w-[90%] lg:w-[400px]"
+      className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 p-6 md:p-8 shadow-lg rounded-2xl mx-auto w-full max-w-[440px]"
       onSubmit={handleSubmit(handleSubmitForm)}
     >
       <TextInput
-        inputLabel="Email"
-        placeholder="Seu email"
-        {...register("email")}
+        inputLabel="Domínio do seu site"
+        placeholder="ex: plssistemas.com.br"
+        autoComplete="url"
+        {...register("domain")}
       />
-      {errors.email && <ErrorMessage errorMessage={errors.email.message} />}
+      {errors.domain && <ErrorMessage errorMessage={errors.domain.message} />}
       <PasswordTextInput
         inputLabel="Senha"
-        placeholder="Sua senha de pelo menos 8 dígitos"
+        placeholder="Sua senha"
+        autoComplete="current-password"
         {...register("password")}
       />
       {errors.password && (
         <ErrorMessage errorMessage={errors.password.message} />
       )}
-      <div className="flex w-full my-6">
+      <div className="flex w-full my-4">
         <Link to="/recuperar-senha">
           <LinkButton title="Esqueci minha senha" />
         </Link>
       </div>
       <Button title="Acessar a plataforma" type="submit" disabled={!isValid} />
-      <div className="flex flex-row w-full mt-6 justify-between items-center">
-        <span className="text-gray-700 dark:text-gray-100 text-sm">
-          Não tem uma conta?
-        </span>
-        <Link to="/cadastro">
-          <LinkButton title="Criar minha conta" />
-        </Link>
-      </div>
     </form>
   );
 }

@@ -2,7 +2,6 @@ import { NotFound } from "@/screens/404";
 import { InitialScreen } from "@/screens/auth/InitialScreen";
 import { AuthenticationLayout } from "@/screens/auth/layout";
 import { RecoveryPassword } from "@/screens/auth/RecoveryPassword";
-import { SignUp } from "@/screens/auth/SignUp";
 import { UpdatePassword } from "@/screens/auth/UpdatePassword";
 import { ErrorPage } from "@/screens/error";
 import { ReactNode } from "react";
@@ -21,10 +20,6 @@ const authRoutesBase: route[] = [
   {
     path: "/",
     element: <InitialScreen />,
-  },
-  {
-    path: "/cadastro",
-    element: <SignUp />,
   },
   {
     path: "/recuperar-senha",

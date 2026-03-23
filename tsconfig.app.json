@@ -32,6 +32,8 @@
       "@/contexts/*": ["contexts/*"],
       "@/store/*": ["store/*"],
       "@/data/*": ["data/*"],
+      "@/dtos": ["dtos/index.ts"],
+      "@/dtos/*": ["dtos/*"],
       "@/hooks/*": ["hooks/*"],
       "@/repositories/*": ["repositories/*"],
       "@/services/*": ["services/*"],

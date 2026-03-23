@@ -23,17 +23,17 @@ export function PostCard({
 }: PostCardProps) {
   return (
     <article
-      className={`w-full min-h-[350px] bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700 p-4 flex flex-col ${className ?? ""}`}
+      className={`w-full min-h-[320px] bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700 p-4 flex flex-col ${className ?? ""}`}
     >
-      <h3 className="text-gray-900 dark:text-gray-100 text-sm sm:text-base font-semibold leading-tight min-h-[58px] mb-4 text-center">
-        {title}
-      </h3>
-
       <img
         src={coverUrl}
         alt={`Capa do post ${title}`}
         className="w-full h-[180px] rounded-md object-cover bg-gray-300"
       />
+
+      <h3 className="text-gray-900 dark:text-gray-100 text-sm sm:text-base font-semibold leading-tight mt-2 ">
+        {title}
+      </h3>
 
       <div className="mt-4 flex flex-row items-end justify-between gap-4">
         <div className="flex flex-col">

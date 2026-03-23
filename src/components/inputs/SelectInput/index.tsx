@@ -5,6 +5,10 @@ import Select, { StylesConfig } from "react-select";
 interface SelectInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   options: any[];
+  selectedOption?: {
+    value: number | string;
+    label: string;
+  } | null;
   widthVariant?: "mid" | "full";
   isSearchable?: boolean;
   labelStyle?: CSSProperties;
@@ -27,6 +31,7 @@ export const SelectInput = forwardRef<HTMLInputElement, SelectInputProps>(
     {
       label,
       options,
+      selectedOption,
       widthVariant,
       isSearchable,
       containerStyle,
@@ -102,6 +107,13 @@ export const SelectInput = forwardRef<HTMLInputElement, SelectInputProps>(
       }
     };
 
+    const resolvedSelectedOption =
+      selectedOption === undefined
+        ? undefined
+        : formattedOptions.find(
+            (option) => option.value === selectedOption?.value,
+          ) ?? null;
+
     return (
       <div
         className={
@@ -123,7 +135,7 @@ export const SelectInput = forwardRef<HTMLInputElement, SelectInputProps>(
           {label}
         </label>
         <Select
-          defaultValue={options[0]}
+          defaultValue={selectedOption === undefined ? options[0] : undefined}
           className={
             widthVariant === "full"
               ? "w-full text-gray-600"
@@ -133,6 +145,7 @@ export const SelectInput = forwardRef<HTMLInputElement, SelectInputProps>(
           styles={customStyles}
           options={formattedOptions}
           onChange={handleChange}
+          value={resolvedSelectedOption}
           noOptionsMessage={({ inputValue }) =>
             !inputValue
               ? inputValue

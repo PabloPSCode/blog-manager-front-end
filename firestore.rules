@@ -24,11 +24,47 @@ service cloud.firestore {
       (data.deletedAt == null || data.deletedAt is string);
     }
 
+    function isPostDocument(data) {
+      return data.keys().hasOnly([
+        "siteId",
+        "title",
+        "htmlContent",
+        "backgroundUrl",
+        "authorId",
+        "createdAt",
+        "updatedAt",
+        "deletedAt"
+      ]) &&
+      data.siteId is string &&
+      data.siteId == "pls-site-id" &&
+      data.title is string &&
+      data.title.size() > 0 &&
+      data.htmlContent is string &&
+      data.htmlContent.size() > 0 &&
+      data.backgroundUrl is string &&
+      data.authorId is string &&
+      data.authorId.size() > 0 &&
+      data.createdAt is string &&
+      data.updatedAt is string &&
+      (data.deletedAt == null || data.deletedAt is string);
+    }
+
     match /authors/{authorId} {
       allow get, list: if true;
       allow create: if isAuthorDocument(request.resource.data) &&
         request.resource.data.deletedAt == null;
       allow update: if isAuthorDocument(request.resource.data) &&
+        resource.data.siteId == "pls-site-id" &&
+        request.resource.data.siteId == "pls-site-id" &&
+        request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if false;
+    }
+
+    match /posts/{postId} {
+      allow get, list: if true;
+      allow create: if isPostDocument(request.resource.data) &&
+        request.resource.data.deletedAt == null;
+      allow update: if isPostDocument(request.resource.data) &&
         resource.data.siteId == "pls-site-id" &&
         request.resource.data.siteId == "pls-site-id" &&
         request.resource.data.createdAt == resource.data.createdAt;

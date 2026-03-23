@@ -9,7 +9,8 @@ const reactModalCustomStyles = {
     opacity: 1,
     borderRadius: 8,
     padding: 32,
-    maxWidth: "90vw",
+    maxWidth: "60vw",
+    maxHeight: "80vh",
     zIndex: 1000,
   },
   overlay: {
@@ -28,6 +29,7 @@ const reactMobileMenuModalCustomStyles = {
     padding: 0,
     minWidth: "280px",
     maxWidth: "400px",
+    maxHeight: "80vh",
     zIndex: 1000,
   },
   overlay: {
@@ -47,14 +49,14 @@ const reactModalCustomStylesDark = {
     opacity: 1,
     borderRadius: 8,
     padding: 32,
-    maxWidth: "90vw",
+    maxWidth: "60vw",
     backgroundColor: "#1e293b",
     maxHeight: "80vh",
     zIndex: 1000,
   },
   overlay: {
     backgroundColor: "rgba(0, 0, 0, 0.5)",
-    zIndex: 999, 
+    zIndex: 999,
   },
 };
 
@@ -73,7 +75,7 @@ const reactMobileMenuModalCustomStylesDark = {
   },
   overlay: {
     backgroundColor: "rgba(0, 0, 0, 0.5)",
-    zIndex: 999, 
+    zIndex: 999,
   },
 };
 

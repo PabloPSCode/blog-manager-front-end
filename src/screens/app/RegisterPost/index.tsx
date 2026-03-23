@@ -12,33 +12,33 @@ import { SelectInput as Select } from "@/components/inputs/SelectInput";
 import { TextInput } from "@/components/inputs/TextInput";
 import { ScreenTitleIcon } from "@/components/miscellaneous/ScreenTitleIcon";
 import { IFile, UploadedFile } from "@/components/miscellaneous/UploadedFile";
-import { authors } from "@/data/mocked";
+import { IAuthor } from "@/dtos";
+import { authorsService } from "@/services/authors.service";
+import { postsService } from "@/services/posts.service";
+import { showAlertError, showAlertSuccess } from "@/utils/alerts";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ChangeEvent, useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 
 interface RegisterPostInputs {
   title: string;
-  author_id: string;
-  content: string;
-  cover_file: any;
+  authorId: string;
+  htmlContent: string;
+  backgroundFile: any;
 }
 
 export function RegisterPost() {
   const MAX_POST_COVER_FILE_SIZE = 2 * 1024 * 1024; //2MB
   const MIN_POST_CONTENT_LENGTH = 24;
 
+  const [authors, setAuthors] = useState<IAuthor[]>([]);
+  const [isLoadingAuthors, setIsLoadingAuthors] = useState(true);
   const [uploadedFile, setUploadedFile] = useState<IFile | null>(null);
   const [wasFileUploaded, setWasFileUploaded] = useState(false);
-
-  const authorOptions = [
-    { value: "", label: "Selecione um autor" },
-    ...authors.map((author) => ({
-      value: author.id ?? author.name,
-      label: author.name,
-    })),
-  ];
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   const getPlainTextFromHtml = (value: string) =>
     value
@@ -48,8 +48,8 @@ export function RegisterPost() {
 
   const validationSchema = yup.object({
     title: yup.string().required(REQUIRED_FIELD_MESSAGE),
-    author_id: yup.string().required(REQUIRED_FIELD_MESSAGE),
-    cover_file: yup
+    authorId: yup.string().required(REQUIRED_FIELD_MESSAGE),
+    backgroundFile: yup
       .mixed()
       .required(REQUIRED_FIELD_MESSAGE)
       .test("fileSize", FILE_MAX_SIZE_MESSAGE + "2MB", (value: any) => {
@@ -66,7 +66,7 @@ export function RegisterPost() {
           );
         },
       ),
-    content: yup
+    htmlContent: yup
       .string()
       .required(REQUIRED_FIELD_MESSAGE)
       .test("plainTextMinLength", DESCRIPTION_MIN_MESSAGE, (value) => {
@@ -87,18 +87,51 @@ export function RegisterPost() {
     handleSubmit,
     formState: { errors, isValid },
     setValue,
+    reset,
   } = useForm<RegisterPostInputs>({
     resolver: yupResolver(validationSchema),
     defaultValues: {
-      author_id: "",
-      content: "",
+      authorId: "",
+      htmlContent: "",
     },
     mode: "onChange",
   });
 
+  const authorOptions = [
+    {
+      value: "",
+      label: isLoadingAuthors ? "Carregando autores..." : "Selecione um autor",
+    },
+    ...authors.map((author) => ({
+      value: author.id ?? author.name,
+      label: author.name,
+    })),
+  ];
+
   useEffect(() => {
     return () => revokePreviewUrl(uploadedFile);
   }, [uploadedFile]);
+
+  useEffect(() => {
+    const loadAuthors = async () => {
+      try {
+        setIsLoadingAuthors(true);
+        const loadedAuthors = await authorsService.list();
+        setAuthors(loadedAuthors);
+      } catch (error) {
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "Nao foi possivel carregar os autores.";
+
+        showAlertError(errorMessage);
+      } finally {
+        setIsLoadingAuthors(false);
+      }
+    };
+
+    void loadAuthors();
+  }, []);
 
   const handleUploadFile = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -127,22 +160,47 @@ export function RegisterPost() {
       return null;
     });
     setWasFileUploaded(false);
-    setValue("cover_file", undefined, {
+    setValue("backgroundFile", undefined, {
       shouldValidate: true,
       shouldDirty: true,
       shouldTouch: true,
     });
   };
 
-  const handleRegisterPost: SubmitHandler<RegisterPostInputs> = ({
-    cover_file,
-    ...data
-  }) => {
-    console.log({
-      ...data,
-      coverFile: cover_file?.[0] ?? null,
-      coverUrl: uploadedFile?.uri ?? null,
-    });
+  const handleRegisterPost: SubmitHandler<RegisterPostInputs> = async (
+    data,
+  ) => {
+    try {
+      setIsSubmitting(true);
+
+      await postsService.create({
+        title: data.title.trim(),
+        authorId: data.authorId,
+        htmlContent: data.htmlContent,
+        backgroundFile: data.backgroundFile?.[0] ?? null,
+      });
+
+      showAlertSuccess("Post cadastrado com sucesso");
+      revokePreviewUrl(uploadedFile);
+      setUploadedFile(null);
+      setWasFileUploaded(false);
+      reset({
+        authorId: "",
+        htmlContent: "",
+        backgroundFile: undefined,
+        title: "",
+      });
+      navigate("/dashboard/gerenciar-posts");
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Nao foi possivel cadastrar o post.";
+
+      showAlertError(errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -155,8 +213,8 @@ export function RegisterPost() {
           className="bg-white dark:bg-slate-900 rounded-lg p-6 md:p-8"
           onSubmit={handleSubmit(handleRegisterPost)}
         >
-          <input type="hidden" {...register("author_id")} />
-          <input type="hidden" {...register("content")} />
+          <input type="hidden" {...register("authorId")} />
+          <input type="hidden" {...register("htmlContent")} />
 
           <div className="w-full flex flex-col gap-4">
             <div>
@@ -179,7 +237,7 @@ export function RegisterPost() {
                 placeholder="Escreva ou cole aqui o conteúdo do seu post. Atente-se á formatação."
                 className="!w-full mt-1 border-gray-300 bg-white min-h-[240px]"
                 onChange={(html) => {
-                  setValue("content", html, {
+                  setValue("htmlContent", html, {
                     shouldValidate: true,
                     shouldDirty: true,
                     shouldTouch: true,
@@ -202,8 +260,8 @@ export function RegisterPost() {
                 codeBlock={false}
                 specialCharacters={false}
               />
-              {errors.content && (
-                <ErrorMessage errorMessage={errors.content?.message} />
+              {errors.htmlContent && (
+                <ErrorMessage errorMessage={errors.htmlContent?.message} />
               )}
             </div>
 
@@ -213,15 +271,20 @@ export function RegisterPost() {
                 options={authorOptions}
                 isSearchable={false}
                 onSelectOption={(selectedOption) => {
-                  setValue("author_id", String(selectedOption.value), {
+                  setValue("authorId", String(selectedOption.value), {
                     shouldValidate: true,
                     shouldDirty: true,
                     shouldTouch: true,
                   });
                 }}
               />
-              {errors.author_id && (
-                <ErrorMessage errorMessage={errors.author_id?.message} />
+              {errors.authorId && (
+                <ErrorMessage errorMessage={errors.authorId?.message} />
+              )}
+              {!isLoadingAuthors && authors.length === 0 && (
+                <p className="text-[13px] text-gray-700 dark:text-gray-300 mt-2">
+                  Cadastre ao menos um autor antes de criar um post.
+                </p>
               )}
             </div>
 
@@ -238,24 +301,28 @@ export function RegisterPost() {
                 />
               ) : (
                 <FileInput
-                  label="Select a file"
+                  label="Capa do post"
                   labelDescription="Selecione uma imagem de até 2mb"
-                  buttonTitle="SelectFileButton"
+                  buttonTitle="Selecionar capa do post"
                   accept=".jpg,.jpeg,.png,image/jpeg,image/png"
                   onUpload={handleUploadFile}
-                  {...register("cover_file")}
+                  {...register("backgroundFile")}
                 />
               )}
-              {errors.cover_file && (
+              {errors.backgroundFile && (
                 <ErrorMessage
-                  errorMessage={errors.cover_file?.message as string}
+                  errorMessage={errors.backgroundFile?.message as string}
                 />
               )}
             </div>
           </div>
 
           <div className="w-full mt-6">
-            <Button title="Cadastrar post" type="submit" disabled={!isValid} />
+            <Button
+              title={isSubmitting ? "Cadastrando..." : "Cadastrar post"}
+              type="submit"
+              disabled={!isValid || isSubmitting || isLoadingAuthors || authors.length === 0}
+            />
           </div>
         </form>
       </div>

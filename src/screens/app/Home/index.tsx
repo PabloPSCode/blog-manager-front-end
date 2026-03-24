@@ -96,7 +96,6 @@ export function Home() {
 
         <section className="rounded-2xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm px-8 py-10 mx-4 mb-6">
           <div className="flex items-center mb-8">
-            <MdLanguage className="w-7 h-7 text-primary-light mr-3" />
             <h2 className="text-black dark:text-white text-lg font-bold">
               Informações do site
             </h2>

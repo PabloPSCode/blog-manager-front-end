@@ -1,7 +1,11 @@
-import { authors, posts } from "@/data/mocked";
+import { IAuthor, IPost } from "@/dtos";
+import { authorsService } from "@/services/authors.service";
+import { postsService } from "@/services/posts.service";
+import { useCallback, useEffect, useState } from "react";
 import { FiWifi } from "react-icons/fi";
 import { HiMiniDocumentText, HiUsers } from "react-icons/hi2";
 import { MdLanguage } from "react-icons/md";
+import { Link } from "react-router-dom";
 
 export function Home() {
   const siteInfo = {
@@ -10,10 +14,54 @@ export function Home() {
     onlineSince: "12 de Janeiro de 2026",
   };
 
-  const envVar =
-    import.meta.env.VITE_FIREBASE_API_KEY
+  const [posts, setPosts] = useState<IPost[]>([]);
+  const [authors, setAuthors] = useState<IAuthor[]>([]);
 
-  console.log("env var", envVar);
+  const dashboardCards = [
+    {
+      title: "Posts cadastrados",
+      total: posts.length,
+      icon: HiMiniDocumentText,
+      to: "/dashboard/gerenciar-posts",
+    },
+    {
+      title: "Autores cadastrados",
+      total: authors.length,
+      icon: HiUsers,
+      to: "/dashboard/gerenciar-autores",
+    },
+  ];
+
+  const getPosts = useCallback(async () => {
+    try {
+      const response = await postsService.list();
+      if (response && response.length > 0) {
+        setPosts(response as IPost[]);
+      }
+      return response;
+    } catch (error) {
+      console.error("Erro ao carregar os posts:", error);
+      return [];
+    }
+  }, []);
+
+  const getAuthors = useCallback(async () => {
+    try {
+      const response = await authorsService.list();
+      if (response && response.length > 0) {
+        setAuthors(response as IAuthor[]);
+      }
+      return response;
+    } catch (error) {
+      console.error("Erro ao carregar os autores:", error);
+      return [];
+    }
+  }, []);
+
+  useEffect(() => {
+    getPosts();
+    getAuthors();
+  }, [getPosts, getAuthors]);
 
   return (
     <main className="flex flex-1 flex-col w-[90%] lg:w-full mx-auto lg:pl-8 bg-gray-100 dark:bg-slate-800">
@@ -25,25 +73,25 @@ export function Home() {
         </div>
 
         <section className="w-full grid grid-cols-1 xl:grid-cols-2 gap-4 px-4 mb-4">
-          <div className="rounded-2xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm p-8 min-h-[220px] flex flex-col items-center justify-center">
-            <span className="text-gray-700 dark:text-gray-100 text-5xl font-bold leading-none">
-              {posts.length}
-            </span>
-            <span className="text-gray-700 dark:text-gray-300 text-[20px] mt-2 font-medium">
-              Posts cadastrados
-            </span>
-            <HiMiniDocumentText className="w-14 h-14 text-black dark:text-gray-100 mt-5" />
-          </div>
+          {dashboardCards.map((card) => {
+            const Icon = card.icon;
 
-          <div className="rounded-2xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm p-8 min-h-[220px] flex flex-col items-center justify-center">
-            <span className="text-gray-700 dark:text-gray-100 text-5xl font-bold leading-none">
-              {authors.length}
-            </span>
-            <span className="text-gray-700 dark:text-gray-300 text-[20px] mt-2 font-medium">
-              Autores cadastrados
-            </span>
-            <HiUsers className="w-14 h-14 text-black dark:text-gray-100 mt-5" />
-          </div>
+            return (
+              <Link
+                key={card.title}
+                to={card.to}
+                className="rounded-2xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm p-8 min-h-[220px] flex flex-col items-center justify-center transition hover:-translate-y-1 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-primary-light"
+              >
+                <span className="text-gray-700 dark:text-gray-100 text-5xl font-bold leading-none">
+                  {card.total}
+                </span>
+                <span className="text-gray-700 dark:text-gray-300 text-[20px] mt-2 font-medium">
+                  {card.title}
+                </span>
+                <Icon className="w-14 h-14 text-black dark:text-gray-100 mt-5" />
+              </Link>
+            );
+          })}
         </section>
 
         <section className="rounded-2xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-sm px-8 py-10 mx-4 mb-6">

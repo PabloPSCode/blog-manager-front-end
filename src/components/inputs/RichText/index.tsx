@@ -101,6 +101,57 @@ export interface RichTextEditorProps {
   specialCharacters?: boolean;
 }
 
+type HeadingOption =
+  | {
+      model: "paragraph";
+      title: string;
+      class: string;
+    }
+  | {
+      model: "heading1";
+      view: "h1";
+      title: string;
+      class: string;
+    }
+  | {
+      model: "heading2";
+      view: "h2";
+      title: string;
+      class: string;
+    }
+  | {
+      model: "heading3";
+      view: "h3";
+      title: string;
+      class: string;
+    };
+
+const headingOptions: HeadingOption[] = [
+  {
+    model: "paragraph",
+    title: "Paragrafo",
+    class: "ck-heading_paragraph",
+  },
+  {
+    model: "heading1",
+    view: "h1",
+    title: "H1",
+    class: "ck-heading_heading1",
+  },
+  {
+    model: "heading2",
+    view: "h2",
+    title: "H2",
+    class: "ck-heading_heading2",
+  },
+  {
+    model: "heading3",
+    view: "h3",
+    title: "H3",
+    class: "ck-heading_heading3",
+  },
+];
+
 const RichTextEditor: React.FC<RichTextEditorProps> = ({
   // Conteúdo
   initialData = "<p>Olá do CKEditor 5 no React! ✍️</p>",
@@ -246,19 +297,13 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         className
       )}
     >
-      <style>{`
-        .ck-content ul { list-style: disc !important; padding-left: 1.5rem; }
-        .ck-content ol { list-style: decimal !important; padding-left: 1.5rem; }
-        .ck-content li { margin: 0.25rem 0; }
-        .ck.ck-editor__editable_inline { min-height: 240px; }
-      `}</style>
-
       <CKEditor
         editor={ClassicEditor}
         config={{
           licenseKey: "GPL",
           plugins,
           toolbar,
+          heading: heading ? { options: headingOptions } : undefined,
           placeholder,
           initialData,
         }}

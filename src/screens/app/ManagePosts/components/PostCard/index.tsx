@@ -1,4 +1,4 @@
-import { FiClock } from "react-icons/fi";
+import { FiClock, FiEye } from "react-icons/fi";
 import { IoMdTrash } from "react-icons/io";
 import { MdEdit } from "react-icons/md";
 
@@ -7,6 +7,7 @@ interface PostCardProps {
   coverUrl: string;
   readingTime: string;
   authorName: string;
+  onPreview: () => void;
   onEdit: () => void;
   onDelete: () => void;
   className?: string;
@@ -17,6 +18,7 @@ export function PostCard({
   coverUrl,
   readingTime,
   authorName,
+  onPreview,
   onEdit,
   onDelete,
   className,
@@ -47,6 +49,15 @@ export function PostCard({
         </div>
 
         <div className="flex items-center gap-3">
+          <button
+            type="button"
+            className="flex items-center gap-2 rounded-md border border-gray-200 px-2 py-1 text-xs font-medium text-gray-700 transition hover:bg-gray-100 dark:border-slate-700 dark:text-gray-200 dark:hover:bg-slate-800"
+            onClick={onPreview}
+            aria-label={`Ver conteudo do post ${title}`}
+          >
+            <FiEye className="w-5 h-5 text-gray-700 dark:text-gray-300" />
+            <span>Ver conteudo</span>
+          </button>
           <button
             type="button"
             className="border-none outline-none bg-transparent p-0"

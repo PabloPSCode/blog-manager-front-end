@@ -12,6 +12,7 @@ import {
   EditPostModalInputs,
 } from "./components/EditPostModal";
 import { PostCard } from "./components/PostCard";
+import { SeePostContentModal } from "./components/SeePostContentModal";
 
 export function ManagePosts() {
   const [posts, setPosts] = useState<IPost[]>([]);
@@ -21,6 +22,7 @@ export function ManagePosts() {
   const [isDeletingPost, setIsDeletingPost] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditPostModalOpen, setIsEditPostModalOpen] = useState(false);
+  const [isSeePostContentModalOpen, setIsSeePostContentModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<IPost | null>(null);
 
   const getPlainTextFromHtml = (value: string) =>
@@ -89,9 +91,19 @@ export function ManagePosts() {
     setIsDeleteModalOpen(true);
   };
 
+  const handleOpenSeePostContentModal = (post: IPost) => {
+    setSelectedPost(post);
+    setIsSeePostContentModalOpen(true);
+  };
+
   const handleCloseDeleteModal = () => {
     setSelectedPost(null);
     setIsDeleteModalOpen(false);
+  };
+
+  const handleCloseSeePostContentModal = () => {
+    setSelectedPost(null);
+    setIsSeePostContentModalOpen(false);
   };
 
   const handleConfirmDeletePost = async () => {
@@ -175,6 +187,7 @@ export function ManagePosts() {
                 coverUrl={post.backgroundUrl}
                 readingTime={getReadingTimeFromHtml(post.htmlContent)}
                 authorName={getAuthorName(post.authorId)}
+                onPreview={() => handleOpenSeePostContentModal(post)}
                 onEdit={() => handleOpenEditPostModal(post)}
                 onDelete={() => handleOpenDeleteModal(post)}
               />
@@ -201,6 +214,11 @@ export function ManagePosts() {
         onRequestClose={handleCloseEditPostModal}
         onConfirmAction={handleConfirmEditPost}
         isSubmitting={isUpdatingPost || isDeletingPost}
+      />
+      <SeePostContentModal
+        isOpen={isSeePostContentModalOpen}
+        htmlContent={selectedPost?.htmlContent ?? ""}
+        onRequestClose={handleCloseSeePostContentModal}
       />
     </main>
   );

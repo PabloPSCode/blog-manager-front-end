@@ -41,4 +41,61 @@ h1, h2, h3, h4, h5, h6, p, span, a, li {
   font-family: 'Oxanium', sans-serif;
 }
 
+.ck.ck-editor__editable_inline {
+  min-height: 240px;
+}
+
+.ck-content h1,
+.rich-text-content h1 {
+  font-size: 2.25rem;
+  line-height: 1.15;
+  font-weight: 700;
+  margin: 1.5rem 0 0.75rem;
+}
+
+.ck-content h2,
+.rich-text-content h2 {
+  font-size: 1.875rem;
+  line-height: 1.2;
+  font-weight: 700;
+  margin: 1.25rem 0 0.625rem;
+}
+
+.ck-content h3,
+.rich-text-content h3 {
+  font-size: 1.5rem;
+  line-height: 1.3;
+  font-weight: 700;
+  margin: 1rem 0 0.5rem;
+}
+
+.ck-content p,
+.rich-text-content p {
+  font-size: 1rem;
+  line-height: 1.75;
+  margin: 0.75rem 0;
+}
+
+.ck-content ul,
+.rich-text-content ul {
+  list-style: disc;
+  padding-left: 1.5rem;
+}
+
+.ck-content ol,
+.rich-text-content ol {
+  list-style: decimal;
+  padding-left: 1.5rem;
+}
+
+.ck-content li,
+.rich-text-content li {
+  margin: 0.25rem 0;
+}
+
+.ck-content a,
+.rich-text-content a {
+  color: #2563eb;
+  text-decoration: underline;
+}
 

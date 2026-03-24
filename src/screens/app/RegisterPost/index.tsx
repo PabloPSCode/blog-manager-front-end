@@ -243,18 +243,13 @@ export function RegisterPost() {
                     shouldTouch: true,
                   });
                 }}
-                heading={false}
                 findAndReplace={false}
                 selectAll={false}
                 removeFormat={false}
-                highlight={false}
-                fontFamily={false}
                 fontSize={false}
                 fontColor={false}
                 fontBackgroundColor={false}
-                alignment={false}
                 indent={false}
-                blockQuote={false}
                 horizontalLine={false}
                 mediaEmbed={false}
                 codeBlock={false}

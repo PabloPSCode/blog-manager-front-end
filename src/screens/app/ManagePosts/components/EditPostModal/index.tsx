@@ -252,7 +252,6 @@ export function EditPostModal({
                 shouldTouch: true,
               });
             }}
-            heading={false}
             findAndReplace={false}
             selectAll={false}
             removeFormat={false}

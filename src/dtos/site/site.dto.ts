@@ -1,7 +1,7 @@
 import type { IPost } from "../post/post.dto";
 import type { IAuthor } from "../author/author.dto";
 
-export const DEFAULT_SITE_PASSWORD = "PLSSistemas7963";
+export const SITE_PASSWORD_PREFIX = "plssistemas";
 
 export interface ISite {
   id?: string;

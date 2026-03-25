@@ -75,6 +75,11 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
   const ref = useRef<LoadingBarProps>(null);
 
+  const isActionActive = (link: string) => breadCrumbAction === link;
+
+  const isItemActive = (links: string[]) =>
+    links.some((link) => isActionActive(link));
+
   const handleOpenedAccordionIndexes = (idx: number) => {
     const filteredAccordionIndexes = openedAccordionIndexes.filter(
       (index) => index !== idx,
@@ -134,6 +139,22 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   }, [breadCrumbBase, breadCrumbAction]);
 
   useEffect(() => {
+    const activeAccordionIndex = menuItems.findIndex((item) =>
+      isItemActive(item.actions.map((itemAction) => itemAction.link)),
+    );
+
+    if (activeAccordionIndex === -1) {
+      return;
+    }
+
+    setOpenedAccordionIndexes((currentIndexes) =>
+      currentIndexes.includes(activeAccordionIndex)
+        ? currentIndexes
+        : [...currentIndexes, activeAccordionIndex],
+    );
+  }, [breadCrumbAction]);
+
+  useEffect(() => {
     if (ref.current) {
       ref.current.staticStart();
       ref.current.complete();
@@ -160,57 +181,110 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             className="mb-8 font-bold tracking-wide"
           />
           {menuItems.map((item, idx) => (
-            <Accordion
-              className="flex flex-col"
-              open={openedAccordionIndexes.includes(idx)}
-              key={item.title}
-            >
-              <AccordionHeader
-                className="flex  justify-start border-none mb-[-12px]"
-                onClick={() => handleOpenedAccordionIndexes(idx)}
-              >
-                <ListItem
-                  className={`text-[12px] lg:text-[14px] text-black dark:text-white hover:text-slate-800 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-slate-800 focus:text-slate-800 dark:focus:text-gray-200 focus:bg-gray-200 dark:focus:bg-slate-800 font-secondary`}
+            (() => {
+              const isOpen = openedAccordionIndexes.includes(idx);
+              const itemIsActive = isItemActive(
+                item.actions.map((itemAction) => itemAction.link),
+              );
+
+              return (
+                <Accordion
+                  className="flex w-full flex-col"
+                  open={isOpen}
+                  key={item.title}
                 >
-                  <FeatherIcon
-                    icon={item.icon}
-                    size={24}
-                    className="text-black dark:text-white mr-2"
-                    strokeWidth={1}
-                  />
-                  {item.title}
-                </ListItem>
-              </AccordionHeader>
-              <AccordionBody className="flex flex-col py-0 px-4">
-                {item.actions.map((action) => (
-                  <Link
-                    to={"/dashboard/" + action.link}
-                    key={action.title}
-                    className={`mb-1 p-0 text-[13px] font-bold text-black dark:text-white`}
+                  <div
+                    className={`mb-1 w-full border-l-2 pl-3 transition-colors ${
+                      isOpen || itemIsActive
+                        ? "border-primary"
+                        : "border-gray-200 dark:border-slate-700"
+                    }`}
                   >
-                    <ListItem
-                      className={`text-primary dark:text-primary-light font-light font-poppinshover:text-blue-700 hover:text-slate-800 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-slate-800 focus:text-slate-800 dark:focus:text-gray-200 focus:bg-gray-200 dark:focus:bg-slate-800 font-secondary`}
+                    <AccordionHeader
+                      className="flex justify-start border-none p-0"
+                      onClick={() => handleOpenedAccordionIndexes(idx)}
                     >
-                      {action.title}
-                    </ListItem>
-                  </Link>
-                ))}
-              </AccordionBody>
-            </Accordion>
+                      <ListItem
+                        className={`w-full rounded-r-xl rounded-l-none text-[12px] lg:text-[14px] font-secondary ${
+                          isOpen || itemIsActive
+                            ? "bg-violet-50 text-primary hover:bg-violet-50 focus:bg-violet-50 dark:bg-slate-800 dark:text-primary-light dark:hover:bg-slate-800 dark:hover:text-white dark:focus:bg-slate-800"
+                            : "text-black dark:text-white hover:text-slate-800 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-800 focus:text-slate-800 dark:focus:text-white focus:bg-gray-200 dark:focus:bg-slate-800"
+                        }`}
+                      >
+                        <FeatherIcon
+                          icon={item.icon}
+                          size={24}
+                          className={`mr-2 ${
+                            isOpen || itemIsActive
+                              ? "text-primary dark:text-primary-light"
+                              : "text-black dark:text-white"
+                          }`}
+                          strokeWidth={1}
+                        />
+                        {item.title}
+                      </ListItem>
+                    </AccordionHeader>
+                  </div>
+                  <AccordionBody className="flex flex-col py-0 pr-0 pl-6">
+                    <div className="flex w-full flex-col gap-1 border-l border-gray-200 pl-3 dark:border-slate-700">
+                      {item.actions.map((action) => {
+                        const actionIsActive = isActionActive(action.link);
+
+                        return (
+                          <Link
+                            to={"/dashboard/" + action.link}
+                            key={action.title}
+                            className="w-full p-0 text-[13px] font-bold text-black dark:text-white"
+                          >
+                            <ListItem
+                              className={`w-full rounded-r-lg rounded-l-none border-l-2 py-2 ${
+                                actionIsActive
+                                  ? "border-primary bg-violet-50 text-primary hover:bg-violet-50 focus:bg-violet-50 dark:bg-slate-800 dark:text-primary-light dark:hover:bg-slate-800 dark:hover:text-white dark:focus:bg-slate-800"
+                                  : "border-transparent text-primary dark:text-primary-light hover:border-gray-300 hover:text-slate-800 hover:bg-gray-200 dark:hover:border-slate-500 dark:hover:text-white dark:hover:bg-slate-800 focus:border-gray-300 focus:text-slate-800 focus:bg-gray-200 dark:focus:border-slate-500 dark:focus:text-white dark:focus:bg-slate-800"
+                              }`}
+                            >
+                              {action.title}
+                            </ListItem>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </AccordionBody>
+                </Accordion>
+              );
+            })()
           ))}
           <Link
             to="/dashboard/perguntas-frequentes"
             className="mt-8 p-0 text-[13px] font-bold text-black dark:text-white w-full"
           >
-            <ListItem className="text-[12px] lg:text-[14px] text-black dark:text-white hover:text-slate-800 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-slate-800 focus:text-slate-800 dark:focus:text-gray-200 focus:bg-gray-200 dark:focus:bg-slate-800 font-secondary">
-              <FeatherIcon
-                icon="help-circle"
-                size={24}
-                className="text-black dark:text-white mr-2"
-                strokeWidth={1}
-              />
-              Central de ajuda
-            </ListItem>
+            <div
+              className={`w-full border-l-2 pl-3 transition-colors ${
+                breadCrumbAction === "perguntas-frequentes"
+                  ? "border-primary"
+                  : "border-gray-200 dark:border-slate-700"
+              }`}
+            >
+              <ListItem
+                className={`rounded-r-xl rounded-l-none text-[12px] lg:text-[14px] font-secondary ${
+                  breadCrumbAction === "perguntas-frequentes"
+                    ? "bg-violet-50 text-primary hover:bg-violet-50 focus:bg-violet-50 dark:bg-slate-800 dark:text-primary-light dark:hover:bg-slate-800 dark:hover:text-white dark:focus:bg-slate-800"
+                    : "text-black dark:text-white hover:text-slate-800 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-800 focus:text-slate-800 dark:focus:text-white focus:bg-gray-200 dark:focus:bg-slate-800"
+                }`}
+              >
+                <FeatherIcon
+                  icon="help-circle"
+                  size={24}
+                  className={`mr-2 ${
+                    breadCrumbAction === "perguntas-frequentes"
+                      ? "text-primary dark:text-primary-light"
+                      : "text-black dark:text-white"
+                  }`}
+                  strokeWidth={1}
+                />
+                Central de ajuda
+              </ListItem>
+            </div>
           </Link>
         </nav>
         <div className="flex flex-1 flex-col justify-between pb-0 bg-gray-100 dark:bg-slate-800 h-screen w-full overflow-y-auto">
@@ -327,57 +401,110 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             />
           </Link>
           {menuItems.map((item, idx) => (
-            <Accordion
-              className="flex flex-col"
-              open={openedAccordionIndexes.includes(idx)}
-              key={item.title}
-            >
-              <AccordionHeader
-                className="flex  justify-start border-none mb-[-12px]"
-                onClick={() => handleOpenedAccordionIndexes(idx)}
-              >
-                <ListItem
-                  className={`text-[12px] lg:text-[14px] text-black dark:text-white hover:text-slate-800 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-slate-800 focus:text-slate-800 dark:focus:text-gray-200 focus:bg-gray-200 dark:focus:bg-slate-800`}
+            (() => {
+              const isOpen = openedAccordionIndexes.includes(idx);
+              const itemIsActive = isItemActive(
+                item.actions.map((itemAction) => itemAction.link),
+              );
+
+              return (
+                <Accordion
+                  className="flex w-full flex-col"
+                  open={isOpen}
+                  key={item.title}
                 >
-                  <FeatherIcon
-                    icon={item.icon}
-                    size={24}
-                    className="text-black dark:text-white mr-2"
-                    strokeWidth={1}
-                  />
-                  {item.title}
-                </ListItem>
-              </AccordionHeader>
-              <AccordionBody className="flex flex-col py-0 px-4">
-                {item.actions.map((action) => (
-                  <Link
-                    to={"/dashboard/" + action.link}
-                    key={action.title}
-                    className={` mb-1 p-0 text-[12px] font-bold`}
+                  <div
+                    className={`mb-1 w-full border-l-2 pl-3 transition-colors ${
+                      isOpen || itemIsActive
+                        ? "border-primary"
+                        : "border-gray-200 dark:border-slate-700"
+                    }`}
                   >
-                    <ListItem
-                      className={`  text-primary dark:text-primary-light font-regular font-poppinshover:text-blue-700 hover:text-slate-800 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-slate-800 focus:text-slate-800 dark:focus:text-gray-200 focus:bg-gray-200 dark:focus:bg-slate-800`}
+                    <AccordionHeader
+                      className="flex justify-start border-none p-0"
+                      onClick={() => handleOpenedAccordionIndexes(idx)}
                     >
-                      {action.title}
-                    </ListItem>
-                  </Link>
-                ))}
-              </AccordionBody>
-            </Accordion>
+                      <ListItem
+                        className={`w-full rounded-r-xl rounded-l-none text-[12px] lg:text-[14px] ${
+                          isOpen || itemIsActive
+                            ? "bg-violet-50 text-primary hover:bg-violet-50 focus:bg-violet-50 dark:bg-slate-800 dark:text-primary-light dark:hover:bg-slate-800 dark:hover:text-white dark:focus:bg-slate-800"
+                            : "text-black dark:text-white hover:text-slate-800 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-800 focus:text-slate-800 dark:focus:text-white focus:bg-gray-200 dark:focus:bg-slate-800"
+                        }`}
+                      >
+                        <FeatherIcon
+                          icon={item.icon}
+                          size={24}
+                          className={`mr-2 ${
+                            isOpen || itemIsActive
+                              ? "text-primary dark:text-primary-light"
+                              : "text-black dark:text-white"
+                          }`}
+                          strokeWidth={1}
+                        />
+                        {item.title}
+                      </ListItem>
+                    </AccordionHeader>
+                  </div>
+                  <AccordionBody className="flex flex-col py-0 pr-0 pl-6">
+                    <div className="flex w-full flex-col gap-1 border-l border-gray-200 pl-3 dark:border-slate-700">
+                      {item.actions.map((action) => {
+                        const actionIsActive = isActionActive(action.link);
+
+                        return (
+                          <Link
+                            to={"/dashboard/" + action.link}
+                            key={action.title}
+                            className="w-full p-0 text-[12px] font-bold"
+                          >
+                            <ListItem
+                              className={`w-full rounded-r-lg rounded-l-none border-l-2 py-2 ${
+                                actionIsActive
+                                  ? "border-primary bg-violet-50 text-primary hover:bg-violet-50 focus:bg-violet-50 dark:bg-slate-800 dark:text-primary-light dark:hover:bg-slate-800 dark:hover:text-white dark:focus:bg-slate-800"
+                                  : "border-transparent text-primary dark:text-primary-light hover:border-gray-300 hover:text-slate-800 hover:bg-gray-200 dark:hover:border-slate-500 dark:hover:text-white dark:hover:bg-slate-800 focus:border-gray-300 focus:text-slate-800 focus:bg-gray-200 dark:focus:border-slate-500 dark:focus:text-white dark:focus:bg-slate-800"
+                              }`}
+                            >
+                              {action.title}
+                            </ListItem>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </AccordionBody>
+                </Accordion>
+              );
+            })()
           ))}
           <Link
             to="/dashboard/perguntas-frequentes"
             className="mt-8 p-0 text-[12px] font-bold w-full"
           >
-            <ListItem className="text-[12px] lg:text-[14px] text-black dark:text-white hover:text-slate-800 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-slate-800 focus:text-slate-800 dark:focus:text-gray-200 focus:bg-gray-200 dark:focus:bg-slate-800">
-              <FeatherIcon
-                icon="help-circle"
-                size={24}
-                className="text-black dark:text-white mr-2"
-                strokeWidth={1}
-              />
-              Central de ajuda
-            </ListItem>
+            <div
+              className={`w-full border-l-2 pl-3 transition-colors ${
+                breadCrumbAction === "perguntas-frequentes"
+                  ? "border-primary"
+                  : "border-gray-200 dark:border-slate-700"
+              }`}
+            >
+              <ListItem
+                className={`rounded-r-xl rounded-l-none text-[12px] lg:text-[14px] ${
+                  breadCrumbAction === "perguntas-frequentes"
+                    ? "bg-violet-50 text-primary hover:bg-violet-50 focus:bg-violet-50 dark:bg-slate-800 dark:text-primary-light dark:hover:bg-slate-800 dark:hover:text-white dark:focus:bg-slate-800"
+                    : "text-black dark:text-white hover:text-slate-800 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-800 focus:text-slate-800 dark:focus:text-white focus:bg-gray-200 dark:focus:bg-slate-800"
+                }`}
+              >
+                <FeatherIcon
+                  icon="help-circle"
+                  size={24}
+                  className={`mr-2 ${
+                    breadCrumbAction === "perguntas-frequentes"
+                      ? "text-primary dark:text-primary-light"
+                      : "text-black dark:text-white"
+                  }`}
+                  strokeWidth={1}
+                />
+                Central de ajuda
+              </ListItem>
+            </div>
           </Link>
         </nav>
       </Modal>

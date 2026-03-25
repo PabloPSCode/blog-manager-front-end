@@ -150,12 +150,15 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             <img
               src={logo_text}
               alt="logo-text"
-              width={240}
-              height={120}
+              width={160}
+              height={80}
               className="mb-8"
             />
           </Link>
-          <Title content="GERENCIADOR DE BLOGS" className="mb-8 font-bold tracking-wide" />
+          <Title
+            content="GERENCIADOR DE BLOGS"
+            className="mb-8 font-bold tracking-wide"
+          />
           {menuItems.map((item, idx) => (
             <Accordion
               className="flex flex-col"
@@ -199,9 +202,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             to="/dashboard/perguntas-frequentes"
             className="mt-8 p-0 text-[13px] font-bold text-black dark:text-white w-full"
           >
-            <ListItem
-              className="text-[12px] lg:text-[14px] text-black dark:text-white hover:text-slate-800 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-slate-800 focus:text-slate-800 dark:focus:text-gray-200 focus:bg-gray-200 dark:focus:bg-slate-800 font-secondary"
-            >
+            <ListItem className="text-[12px] lg:text-[14px] text-black dark:text-white hover:text-slate-800 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-slate-800 focus:text-slate-800 dark:focus:text-gray-200 focus:bg-gray-200 dark:focus:bg-slate-800 font-secondary">
               <FeatherIcon
                 icon="help-circle"
                 size={24}
@@ -320,8 +321,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             <img
               src={logo_text}
               alt="logo-text"
-              width={240}
-              height={120}
+              width={160}
+              height={80}
               className="mb-4 mt-8"
             />
           </Link>
@@ -368,9 +369,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             to="/dashboard/perguntas-frequentes"
             className="mt-8 p-0 text-[12px] font-bold w-full"
           >
-            <ListItem
-              className="text-[12px] lg:text-[14px] text-black dark:text-white hover:text-slate-800 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-slate-800 focus:text-slate-800 dark:focus:text-gray-200 focus:bg-gray-200 dark:focus:bg-slate-800"
-            >
+            <ListItem className="text-[12px] lg:text-[14px] text-black dark:text-white hover:text-slate-800 dark:hover:text-gray-200 hover:bg-gray-200 dark:hover:bg-slate-800 focus:text-slate-800 dark:focus:text-gray-200 focus:bg-gray-200 dark:focus:bg-slate-800">
               <FeatherIcon
                 icon="help-circle"
                 size={24}

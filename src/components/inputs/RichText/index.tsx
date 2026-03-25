@@ -43,7 +43,7 @@ import {
 } from "ckeditor5";
 import "ckeditor5/ckeditor5.css";
 import clsx from "clsx";
-import React from "react";
+import React, { useMemo } from "react";
 
 export interface RichTextEditorProps {
   /** HTML inicial do editor. */
@@ -152,6 +152,107 @@ const headingOptions: HeadingOption[] = [
   },
 ];
 
+const BLOCK_TAG_NAMES = new Set([
+  "p",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+]);
+
+const hasMeaningfulContent = (node: ChildNode) => {
+  if (node.nodeType === Node.TEXT_NODE) {
+    return Boolean(node.textContent?.trim());
+  }
+
+  return node.nodeType === Node.ELEMENT_NODE;
+};
+
+const cloneBlockWithContent = (
+  sourceElement: Element,
+  targetDocument: Document,
+  nodes: ChildNode[],
+) => {
+  const nextElement = targetDocument.createElement(sourceElement.tagName.toLowerCase());
+
+  Array.from(sourceElement.attributes).forEach((attribute) => {
+    nextElement.setAttribute(attribute.name, attribute.value);
+  });
+
+  nodes.forEach((node) => {
+    nextElement.appendChild(node.cloneNode(true));
+  });
+
+  return nextElement;
+};
+
+const normalizeBlockBreaksHtml = (html: string) => {
+  if (!html || typeof window === "undefined") {
+    return html;
+  }
+
+  const parser = new DOMParser();
+  const parsedDocument = parser.parseFromString(`<div>${html}</div>`, "text/html");
+  const container = parsedDocument.body.firstElementChild;
+
+  if (!container) {
+    return html;
+  }
+
+  const blockElements = Array.from(
+    container.querySelectorAll(Array.from(BLOCK_TAG_NAMES).join(",")),
+  );
+
+  blockElements.forEach((blockElement) => {
+    const segments: ChildNode[][] = [[]];
+
+    Array.from(blockElement.childNodes).forEach((node) => {
+      if (node.nodeName === "BR") {
+        segments.push([]);
+        return;
+      }
+
+      segments[segments.length - 1].push(node);
+    });
+
+    const normalizedSegments = segments.filter((segment) =>
+      segment.some((node) => hasMeaningfulContent(node)),
+    );
+
+    if (normalizedSegments.length <= 1) {
+      return;
+    }
+
+    const replacementElements = normalizedSegments.map((segment) =>
+      cloneBlockWithContent(blockElement, parsedDocument, segment),
+    );
+
+    blockElement.replaceWith(...replacementElements);
+  });
+
+  return container.innerHTML;
+};
+
+const isInsideCodeBlock = (editor: any) => {
+  let parent = editor.model.document.selection.getFirstPosition()?.parent;
+
+  while (parent) {
+    if (parent.is?.("element", "codeBlock")) {
+      return true;
+    }
+
+    if (parent.is?.("rootElement")) {
+      return false;
+    }
+
+    parent = parent.parent;
+  }
+
+  return false;
+};
+
 const RichTextEditor: React.FC<RichTextEditorProps> = ({
   // Conteúdo
   initialData = "<p>Olá do CKEditor 5 no React! ✍️</p>",
@@ -196,6 +297,11 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   codeBlock = true,
   specialCharacters = true,
 } : RichTextEditorProps) => {
+  const normalizedInitialData = useMemo(
+    () => normalizeBlockBreaksHtml(initialData),
+    [initialData],
+  );
+
   /** Plugins*/
   const plugins: any[] = [
     // Essentials
@@ -305,11 +411,26 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
           toolbar,
           heading: heading ? { options: headingOptions } : undefined,
           placeholder,
-          initialData,
+          initialData: normalizedInitialData,
+        }}
+        onReady={(editor) => {
+          editor.keystrokes.set(
+            "Shift+Enter",
+            (_data: unknown, cancel: () => void) => {
+              if (isInsideCodeBlock(editor)) {
+                editor.execute("shiftEnter");
+              } else {
+                editor.execute("enter");
+              }
+
+              editor.editing.view.scrollToTheSelection();
+              cancel();
+            },
+            { priority: "high" },
+          );
         }}
         onChange={(_, editor) => {
-          const data = editor.getData();
-          onChange?.(data);
+          onChange?.(editor.getData());
         }}
       />
     </div>

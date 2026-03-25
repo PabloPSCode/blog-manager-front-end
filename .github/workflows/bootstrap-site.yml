@@ -1,0 +1,67 @@
+name: Bootstrap Site
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: bootstrap-site-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  bootstrap-site:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build bootstrap payload
+        id: payload
+        env:
+          SITE_URL: ${{ secrets.SITE_URL }}
+          SITE_DOMAIN: ${{ secrets.SITE_DOMAIN }}
+          SITE_WHATSAPP: ${{ secrets.SITE_WHATSAPP }}
+          SITE_PASSWORD: ${{ secrets.SITE_PASSWORD }}
+        run: |
+          if [ -n "$SITE_PASSWORD" ]; then
+            payload="$(jq -cn \
+              --arg url "$SITE_URL" \
+              --arg domain "$SITE_DOMAIN" \
+              --arg clientWhatsapp "$SITE_WHATSAPP" \
+              --arg password "$SITE_PASSWORD" \
+              '{url: $url, domain: $domain, clientWhatsapp: $clientWhatsapp, password: $password}')"
+          else
+            payload="$(jq -cn \
+              --arg url "$SITE_URL" \
+              --arg domain "$SITE_DOMAIN" \
+              --arg clientWhatsapp "$SITE_WHATSAPP" \
+              '{url: $url, domain: $domain, clientWhatsapp: $clientWhatsapp}')"
+          fi
+
+          {
+            echo 'payload<<EOF'
+            echo "$payload"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Bootstrap site in blog manager API
+        env:
+          BACKEND_URL: ${{ secrets.BACKEND_URL }}
+          PAYLOAD: ${{ steps.payload.outputs.payload }}
+        run: |
+          http_status="$(curl --silent --show-error \
+            --output response.json \
+            --write-out '%{http_code}' \
+            --request POST \
+            --url "${BACKEND_URL%/}/sites" \
+            --header 'Content-Type: application/json' \
+            --data "$PAYLOAD")"
+
+          cat response.json
+
+          if [ "$http_status" != '200' ] && [ "$http_status" != '201' ]; then
+            echo "Unexpected status code: $http_status" >&2
+            exit 1
+          fi

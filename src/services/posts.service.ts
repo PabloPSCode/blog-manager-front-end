@@ -1,5 +1,6 @@
 import type { ICreatePostDTO, IPost, IUpdatePostDTO } from "@/dtos";
 import { getFirebaseStorage, getFirestoreDb } from "@/services/firebase";
+import { getAuthenticatedSiteId } from "@/store/auth";
 import {
   collection,
   doc,
@@ -17,8 +18,6 @@ import {
   ref,
   uploadBytes,
 } from "firebase/storage";
-
-export const POST_SITE_ID = "pls-site-id";
 
 type PostDocument = Omit<IPost, "id">;
 type CreatePostInput = Omit<ICreatePostDTO, "backgroundUrl" | "siteId"> & {
@@ -38,10 +37,14 @@ const toISOString = () => new Date().toISOString();
 const sanitizeFileName = (fileName: string) =>
   fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
 
-const uploadPostBackground = async (postId: string, file: File) => {
+const uploadPostBackground = async (
+  siteId: string,
+  postId: string,
+  file: File,
+) => {
   const storageRef = ref(
     getFirebaseStorage(),
-    `posts/${POST_SITE_ID}/${postId}/${Date.now()}-${sanitizeFileName(file.name)}`,
+    `posts/${siteId}/${postId}/${Date.now()}-${sanitizeFileName(file.name)}`,
   );
 
   await uploadBytes(storageRef, file, {
@@ -98,7 +101,10 @@ const assertPostId = (postId: string) => {
   }
 };
 
-const requirePost = async (postId: string): Promise<IPost> => {
+const requirePost = async (
+  postId: string,
+  siteId: string,
+): Promise<IPost> => {
   assertPostId(postId);
 
   const snapshot = await getDoc(getPostDoc(postId));
@@ -108,21 +114,30 @@ const requirePost = async (postId: string): Promise<IPost> => {
     throw new Error(`Post ${postId} was not found.`);
   }
 
+  if (post.siteId !== siteId) {
+    throw new Error(`Post ${postId} was not found for the authenticated site.`);
+  }
+
   return post;
 };
 
 export const postsService = {
   async create(data: CreatePostInput): Promise<IPost> {
+    const siteId = getAuthenticatedSiteId();
     const postRef = doc(getPostsCollection());
     const timestamp = toISOString();
     let backgroundUrl = "";
 
     if (data.backgroundFile) {
-      backgroundUrl = await uploadPostBackground(postRef.id, data.backgroundFile);
+      backgroundUrl = await uploadPostBackground(
+        siteId,
+        postRef.id,
+        data.backgroundFile,
+      );
     }
 
     const post: PostDocument = {
-      siteId: POST_SITE_ID,
+      siteId,
       title: data.title,
       htmlContent: data.htmlContent,
       backgroundUrl,
@@ -146,30 +161,30 @@ export const postsService = {
   },
 
   async list(): Promise<IPost[]> {
+    const siteId = getAuthenticatedSiteId();
     const snapshot = await getDocs(getPostsCollection());
     const posts = snapshot.docs
       .map((postSnapshot) => mapPostSnapshot(postSnapshot))
       .filter((post): post is IPost => post !== null)
-      .filter(
-        (post) => post.siteId === POST_SITE_ID && post.deletedAt === null,
-      );
+      .filter((post) => post.siteId === siteId && post.deletedAt === null);
 
     return sortPostsByCreatedAtDesc(posts);
   },
 
   async update(data: UpdatePostInput): Promise<IPost> {
-    const existingPost = await requirePost(data.id);
+    const siteId = getAuthenticatedSiteId();
+    const existingPost = await requirePost(data.id, siteId);
 
     if (existingPost.deletedAt !== null) {
       throw new Error(`Post ${data.id} has been deleted and cannot be updated.`);
     }
 
     const nextBackgroundUrl = data.backgroundFile
-      ? await uploadPostBackground(data.id, data.backgroundFile)
+      ? await uploadPostBackground(siteId, data.id, data.backgroundFile)
       : existingPost.backgroundUrl;
 
     const updates: Partial<PostDocument> = {
-      siteId: POST_SITE_ID,
+      siteId,
       updatedAt: toISOString(),
       backgroundUrl: nextBackgroundUrl,
     };
@@ -207,7 +222,8 @@ export const postsService = {
   },
 
   async delete(postId: string): Promise<IPost> {
-    const existingPost = await requirePost(postId);
+    const siteId = getAuthenticatedSiteId();
+    const existingPost = await requirePost(postId, siteId);
 
     if (existingPost.deletedAt !== null) {
       return existingPost;

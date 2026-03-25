@@ -1,5 +1,6 @@
 import type { IAuthor, ICreateAuthorDTO, IUpdateAuthorDTO } from "@/dtos";
 import { getFirebaseStorage, getFirestoreDb } from "@/services/firebase";
+import { getAuthenticatedSiteId } from "@/store/auth";
 import {
   collection,
   doc,
@@ -17,8 +18,6 @@ import {
   ref,
   uploadBytes,
 } from "firebase/storage";
-
-export const AUTHOR_SITE_ID = "pls-site-id";
 
 type AuthorDocument = Omit<IAuthor, "id">;
 type CreateAuthorInput = Omit<ICreateAuthorDTO, "avatarUrl" | "siteId"> & {
@@ -39,12 +38,14 @@ const toISOString = () => new Date().toISOString();
 const sanitizeFileName = (fileName: string) =>
   fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
 
-const uploadAuthorAvatar = async (authorId: string, file: File) => {
+const uploadAuthorAvatar = async (
+  siteId: string,
+  authorId: string,
+  file: File,
+) => {
   const storageRef = ref(
     getFirebaseStorage(),
-    `authors/${AUTHOR_SITE_ID}/${authorId}/${Date.now()}-${sanitizeFileName(
-      file.name,
-    )}`,
+    `authors/${siteId}/${authorId}/${Date.now()}-${sanitizeFileName(file.name)}`,
   );
 
   await uploadBytes(storageRef, file, {
@@ -100,7 +101,10 @@ const assertAuthorId = (authorId: string) => {
   }
 };
 
-const requireAuthor = async (authorId: string): Promise<IAuthor> => {
+const requireAuthor = async (
+  authorId: string,
+  siteId: string,
+): Promise<IAuthor> => {
   assertAuthorId(authorId);
 
   const snapshot = await getDoc(getAuthorDoc(authorId));
@@ -110,23 +114,28 @@ const requireAuthor = async (authorId: string): Promise<IAuthor> => {
     throw new Error(`Author ${authorId} was not found.`);
   }
 
+  if (author.siteId !== siteId) {
+    throw new Error(`Author ${authorId} was not found for the authenticated site.`);
+  }
+
   return author;
 };
 
 export const authorsService = {
   async create(data: CreateAuthorInput): Promise<IAuthor> {
+    const siteId = getAuthenticatedSiteId();
     const authorRef = doc(getAuthorsCollection());
     const timestamp = toISOString();
     let avatarUrl = "";
 
     if (data.avatarFile) {
-      avatarUrl = await uploadAuthorAvatar(authorRef.id, data.avatarFile);
+      avatarUrl = await uploadAuthorAvatar(siteId, authorRef.id, data.avatarFile);
     }
 
     const author: AuthorDocument = {
       name: data.name,
       bio: data.bio,
-      siteId: AUTHOR_SITE_ID,
+      siteId,
       avatarUrl,
       createdAt: timestamp,
       updatedAt: timestamp,
@@ -147,31 +156,30 @@ export const authorsService = {
   },
 
   async list(): Promise<IAuthor[]> {
+    const siteId = getAuthenticatedSiteId();
     const snapshot = await getDocs(getAuthorsCollection());
     const authors = snapshot.docs
       .map((authorSnapshot) => mapAuthorSnapshot(authorSnapshot))
       .filter((author): author is IAuthor => author !== null)
-      .filter(
-        (author) =>
-          author.siteId === AUTHOR_SITE_ID && author.deletedAt === null,
-      );
+      .filter((author) => author.siteId === siteId && author.deletedAt === null);
 
     return sortAuthorsByCreatedAtDesc(authors);
   },
 
   async update(data: UpdateAuthorInput): Promise<IAuthor> {
-    const existingAuthor = await requireAuthor(data.id);
+    const siteId = getAuthenticatedSiteId();
+    const existingAuthor = await requireAuthor(data.id, siteId);
 
     if (existingAuthor.deletedAt !== null) {
       throw new Error(`Author ${data.id} has been deleted and cannot be updated.`);
     }
 
     const nextAvatarUrl = data.avatarFile
-      ? await uploadAuthorAvatar(data.id, data.avatarFile)
+      ? await uploadAuthorAvatar(siteId, data.id, data.avatarFile)
       : existingAuthor.avatarUrl;
 
     const updates: Partial<AuthorDocument> = {
-      siteId: AUTHOR_SITE_ID,
+      siteId,
       updatedAt: toISOString(),
       avatarUrl: nextAvatarUrl,
     };
@@ -205,7 +213,8 @@ export const authorsService = {
   },
 
   async delete(authorId: string): Promise<IAuthor> {
-    const existingAuthor = await requireAuthor(authorId);
+    const siteId = getAuthenticatedSiteId();
+    const existingAuthor = await requireAuthor(authorId, siteId);
 
     if (existingAuthor.deletedAt !== null) {
       return existingAuthor;

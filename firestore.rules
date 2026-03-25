@@ -2,6 +2,29 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isSiteDocument(data) {
+      return data.keys().hasOnly([
+        "url",
+        "domain",
+        "clientWhatsapp",
+        "password",
+        "createdAt",
+        "updatedAt",
+        "deletedAt"
+      ]) &&
+      data.url is string &&
+      data.url.size() > 0 &&
+      data.domain is string &&
+      data.domain.size() > 0 &&
+      data.clientWhatsapp is string &&
+      data.clientWhatsapp.size() > 0 &&
+      data.password is string &&
+      data.password.size() > 0 &&
+      data.createdAt is string &&
+      data.updatedAt is string &&
+      (data.deletedAt == null || data.deletedAt is string);
+    }
+
     function isAuthorDocument(data) {
       return data.keys().hasOnly([
         "name",
@@ -17,7 +40,7 @@ service cloud.firestore {
       data.bio is string &&
       data.bio.size() > 0 &&
       data.siteId is string &&
-      data.siteId == "pls-site-id" &&
+      data.siteId.size() > 0 &&
       data.avatarUrl is string &&
       data.createdAt is string &&
       data.updatedAt is string &&
@@ -36,7 +59,7 @@ service cloud.firestore {
         "deletedAt"
       ]) &&
       data.siteId is string &&
-      data.siteId == "pls-site-id" &&
+      data.siteId.size() > 0 &&
       data.title is string &&
       data.title.size() > 0 &&
       data.htmlContent is string &&
@@ -54,10 +77,18 @@ service cloud.firestore {
       allow create: if isAuthorDocument(request.resource.data) &&
         request.resource.data.deletedAt == null;
       allow update: if isAuthorDocument(request.resource.data) &&
-        resource.data.siteId == "pls-site-id" &&
-        request.resource.data.siteId == "pls-site-id" &&
+        resource.data.siteId is string &&
+        resource.data.siteId.size() > 0 &&
+        request.resource.data.siteId == resource.data.siteId &&
         request.resource.data.createdAt == resource.data.createdAt;
       allow delete: if false;
+    }
+
+    match /sites/{siteId} {
+      allow get, list: if true;
+      allow create: if isSiteDocument(request.resource.data) &&
+        request.resource.data.deletedAt == null;
+      allow update, delete: if false;
     }
 
     match /posts/{postId} {
@@ -65,8 +96,9 @@ service cloud.firestore {
       allow create: if isPostDocument(request.resource.data) &&
         request.resource.data.deletedAt == null;
       allow update: if isPostDocument(request.resource.data) &&
-        resource.data.siteId == "pls-site-id" &&
-        request.resource.data.siteId == "pls-site-id" &&
+        resource.data.siteId is string &&
+        resource.data.siteId.size() > 0 &&
+        request.resource.data.siteId == resource.data.siteId &&
         request.resource.data.createdAt == resource.data.createdAt;
       allow delete: if false;
     }

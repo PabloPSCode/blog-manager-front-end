@@ -2,7 +2,7 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    match /authors/pls-site-id/{authorId}/{fileName} {
+    match /authors/{siteId}/{authorId}/{fileName} {
       allow read: if true;
       allow create, update: if
         request.resource != null &&
@@ -11,7 +11,7 @@ service firebase.storage {
       allow delete: if true;
     }
 
-    match /posts/pls-site-id/{postId}/{fileName} {
+    match /posts/{siteId}/{postId}/{fileName} {
       allow read: if true;
       allow create, update: if
         request.resource != null &&

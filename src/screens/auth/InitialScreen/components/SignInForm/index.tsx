@@ -19,10 +19,14 @@ export interface SignInFormInputs {
 }
 
 interface SignInFormProps {
-  onSubmit: (data: SignInFormInputs) => void;
+  onSubmit: (data: SignInFormInputs) => Promise<void> | void;
+  isSubmitting?: boolean;
 }
 
-export function SignInForm({ onSubmit }: SignInFormProps) {
+export function SignInForm({
+  onSubmit,
+  isSubmitting = false,
+}: SignInFormProps) {
   const validationSchema = yup.object({
     domain: yup.string().required(REQUIRED_FIELD_MESSAGE),
     password: yup
@@ -70,7 +74,11 @@ export function SignInForm({ onSubmit }: SignInFormProps) {
           <LinkButton title="Esqueci minha senha" />
         </Link>
       </div>
-      <Button title="Acessar a plataforma" type="submit" disabled={!isValid} />
+      <Button
+        title={isSubmitting ? "Acessando..." : "Acessar a plataforma"}
+        type="submit"
+        disabled={!isValid || isSubmitting}
+      />
     </form>
   );
 }

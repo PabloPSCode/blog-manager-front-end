@@ -1,10 +1,8 @@
 import { PlusButton } from "@/components/buttons/PlusButton";
 import { ScreenTitleIcon } from "@/components/miscellaneous/ScreenTitleIcon";
 import { IAuthor } from "@/dtos";
-import {
-  AUTHOR_SITE_ID,
-  authorsService,
-} from "@/services/authors.service";
+import { authorsService } from "@/services/authors.service";
+import { useAuthenticationStore } from "@/store/auth";
 import { showAlertError, showAlertSuccess } from "@/utils/alerts";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -16,6 +14,7 @@ import {
 } from "./components/EditAuthorModal";
 
 export function ManageAuthors() {
+  const site = useAuthenticationStore((state) => state.site);
   const [authors, setAuthors] = useState<IAuthor[]>([]);
   const [isLoadingAuthors, setIsLoadingAuthors] = useState(true);
   const [isUpdatingAuthor, setIsUpdatingAuthor] = useState(false);
@@ -154,7 +153,7 @@ export function ManageAuthors() {
             ))
           ) : (
             <div className="col-span-full rounded-lg bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 p-5 text-sm text-gray-700 dark:text-gray-300">
-              Nenhum autor cadastrado para o site {AUTHOR_SITE_ID}.
+              Nenhum autor cadastrado para o site {site?.domain ?? "autenticado"}.
             </div>
           )}
         </div>

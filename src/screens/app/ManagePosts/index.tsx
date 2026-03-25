@@ -2,7 +2,8 @@ import { PlusButton } from "@/components/buttons/PlusButton";
 import { ScreenTitleIcon } from "@/components/miscellaneous/ScreenTitleIcon";
 import { IAuthor, IPost } from "@/dtos";
 import { authorsService } from "@/services/authors.service";
-import { postsService, POST_SITE_ID } from "@/services/posts.service";
+import { postsService } from "@/services/posts.service";
+import { useAuthenticationStore } from "@/store/auth";
 import { showAlertError, showAlertSuccess } from "@/utils/alerts";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
@@ -15,6 +16,7 @@ import { PostCard } from "./components/PostCard";
 import { SeePostContentModal } from "./components/SeePostContentModal";
 
 export function ManagePosts() {
+  const site = useAuthenticationStore((state) => state.site);
   const [posts, setPosts] = useState<IPost[]>([]);
   const [authors, setAuthors] = useState<IAuthor[]>([]);
   const [isLoadingData, setIsLoadingData] = useState(true);
@@ -194,7 +196,7 @@ export function ManagePosts() {
             ))
           ) : (
             <div className="col-span-full rounded-lg bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 p-5 text-sm text-gray-700 dark:text-gray-300">
-              Nenhum post cadastrado para o site {POST_SITE_ID}.
+              Nenhum post cadastrado para o site {site?.domain ?? "autenticado"}.
             </div>
           )}
         </div>

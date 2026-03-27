@@ -1,4 +1,14 @@
-import type { IAuthenticatedSiteDTO, ISite, ISiteLoginDTO } from "@/dtos";
+import type {
+  IAuthenticatedSiteDTO,
+  ICreateSitePasswordRecoveryTokenResponseDTO,
+  ICreateSitePasswordRecoveryTokenDTO,
+  IRecoverSitePasswordDTO,
+  IRecoverSitePasswordResponseDTO,
+  ISite,
+  ISiteLoginDTO,
+  IValidateSitePasswordRecoveryTokenDTO,
+  IValidateSitePasswordRecoveryTokenResponseDTO,
+} from "@/dtos";
 import { api } from "./api";
 
 export const authService = {
@@ -17,6 +27,39 @@ export const authService = {
         Authorization: `Bearer ${jwt}`,
       },
     });
+
+    return response.data;
+  },
+
+  async createRecoveryPasswordToken(
+    payload: ICreateSitePasswordRecoveryTokenDTO,
+  ): Promise<ICreateSitePasswordRecoveryTokenResponseDTO> {
+    const response = await api.post<ICreateSitePasswordRecoveryTokenResponseDTO>(
+      "/auth/recovery-password-token",
+      payload,
+    );
+
+    return response.data;
+  },
+
+  async recoverPassword(
+    payload: IRecoverSitePasswordDTO,
+  ): Promise<IRecoverSitePasswordResponseDTO> {
+    const response = await api.post<IRecoverSitePasswordResponseDTO>(
+      "/auth/recovery-password",
+      payload,
+    );
+
+    return response.data;
+  },
+
+  async validateRecoveryPasswordToken(
+    payload: IValidateSitePasswordRecoveryTokenDTO,
+  ): Promise<IValidateSitePasswordRecoveryTokenResponseDTO> {
+    const response = await api.post<IValidateSitePasswordRecoveryTokenResponseDTO>(
+      "/auth/validate-recovery-password-token",
+      payload,
+    );
 
     return response.data;
   },

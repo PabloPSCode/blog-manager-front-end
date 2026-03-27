@@ -7,6 +7,9 @@ interface CodeInputCardProps {
   onChangeCode: Dispatch<SetStateAction<string>>;
   isInvalidCode: boolean;
   onValidateCode: () => void;
+  actionLabel?: string;
+  description?: string;
+  isSubmitting?: boolean;
 }
 
 export default function CodeInputCard({
@@ -14,6 +17,9 @@ export default function CodeInputCard({
   isInvalidCode,
   onChangeCode,
   onValidateCode,
+  actionLabel = "Validar código",
+  description = "Informe o código numérico de 6 dígitos gerado para recuperar a senha do seu site.",
+  isSubmitting = false,
 }: CodeInputCardProps) {
   const DEFAULT_CODE_LENGTH = 6;
 
@@ -21,8 +27,7 @@ export default function CodeInputCard({
     <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 p-6 md:p-8 shadow-lg rounded-2xl mx-auto w-full max-w-[440px] mb-6">
       <div className="w-full mb-6">
         <p className="text-gray-700 dark:text-gray-300 text-sm md:text-base leading-relaxed">
-          Informe o código numérico de 6 dígitos que enviamos para seu
-          whatsapp
+          {description}
         </p>
       </div>
       <div className="w-full flex flex-col items-center mb-8">
@@ -51,10 +56,10 @@ export default function CodeInputCard({
         </div>
       )}
       <Button
-        title="Validar código"
+        title={isSubmitting ? "Continuando..." : actionLabel}
         type="button"
         onClick={onValidateCode}
-        disabled={code.length !== DEFAULT_CODE_LENGTH}
+        disabled={code.length !== DEFAULT_CODE_LENGTH || isSubmitting}
       />
     </div>
   );

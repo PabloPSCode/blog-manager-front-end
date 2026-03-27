@@ -5,15 +5,17 @@ import { Text } from "@/components/typography/Text";
 import { Dispatch, FormEvent, SetStateAction, useRef, useState } from "react";
 
 interface UpdatePasswordFormProps {
-  onSubmit: () => void;
+  onSubmit: () => Promise<void> | void;
   password: string;
   setPassword: Dispatch<SetStateAction<string>>;
+  isSubmitting?: boolean;
 }
 
 export function UpdatePasswordForm({
   onSubmit,
   password,
   setPassword,
+  isSubmitting = false,
 }: UpdatePasswordFormProps) {
   const submit = async (form: FormEvent) => {
     form.preventDefault();
@@ -56,9 +58,11 @@ export function UpdatePasswordForm({
       <div className="w-full mt-2">
         <Button
           type="submit"
-          title="Redefinir Senha"
+          title={isSubmitting ? "Redefinindo..." : "Redefinir Senha"}
           disabled={
-            password !== passwordConfirmation || !passwordValidatedRef.current
+            password !== passwordConfirmation ||
+            !passwordValidatedRef.current ||
+            isSubmitting
           }
         />
       </div>

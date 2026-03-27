@@ -1,46 +1,44 @@
 import { REQUIRED_FIELD_MESSAGE } from "@/appConstants/index";
 import { Button } from "@/components/buttons/Button";
 import { ErrorMessage } from "@/components/inputs/ErrorMessage";
-import { MaskedTextInput } from "@/components/inputs/MaskedTextInput";
 import { TextInput } from "@/components/inputs/TextInput";
 import { Text } from "@/components/typography/Text";
-import { cpfMask } from "@/utils/masks";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import * as yup from "yup";
 
 export interface RecoveryPasswordInputs {
-  email: string;
-  cpf: string;
+  domain: string;
 }
 
 interface RecoveryPasswordFormProps {
-  onSubmit: (data: RecoveryPasswordInputs) => void;
+  onSubmit: (data: RecoveryPasswordInputs) => Promise<void> | void;
+  isSubmitting?: boolean;
 }
 
 export default function RecoveryPasswordForm({
   onSubmit,
+  isSubmitting = false,
 }: RecoveryPasswordFormProps) {
   const validationSchema = yup.object({
-    email: yup.string().required(REQUIRED_FIELD_MESSAGE),
-    cpf: yup.string().required(REQUIRED_FIELD_MESSAGE),
+    domain: yup.string().required(REQUIRED_FIELD_MESSAGE),
   });
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
     watch,
-  } = useForm({
+  } = useForm<RecoveryPasswordInputs>({
     resolver: yupResolver(validationSchema),
+    mode: "onBlur",
   });
 
-  const handleSubmitForm = (data: RecoveryPasswordInputs) => {
+  const handleSubmitForm: SubmitHandler<RecoveryPasswordInputs> = (data) => {
     onSubmit(data);
   };
 
-  const emailValue = watch("email");
-  const cpfValue = watch("cpf");
+  const domainValue = watch("domain");
 
   return (
     <form
@@ -48,32 +46,23 @@ export default function RecoveryPasswordForm({
       onSubmit={handleSubmit(handleSubmitForm)}
     >
       <div className="w-full flex flex-row mb-4">
-        <Text content="Informe seu email e CPF para receber seu código de redefinição de senha no email informado." />
+        <Text content="Informe o domínio do seu site para gerar um código de redefinição de senha." />
       </div>
 
       <div className="w-full flex flex-col mb-4">
         <TextInput
-          inputLabel="Email"
-          placeholder="Seu email"
-          {...register("email")}
+          inputLabel="Domínio do site"
+          placeholder="ex: plssistemas.com.br"
+          autoComplete="url"
+          {...register("domain")}
         />
-        {errors.email && <ErrorMessage errorMessage={errors.email.message} />}
-      </div>
-      <div className="w-full flex flex-col mb-4">
-        <MaskedTextInput
-          mask={cpfMask}
-          inputLabel="CPF"
-          placeholder="Seu CPF"
-          inputMode="numeric"
-          {...register("cpf")}
-        />
-        {errors.cpf && <ErrorMessage errorMessage={errors.cpf.message} />}
+        {errors.domain && <ErrorMessage errorMessage={errors.domain.message} />}
       </div>
       <div className="w-full mt-2">
         <Button
-          onClick={() => {}}
-          title="Receber Código"
-          disabled={!cpfValue || !emailValue}
+          title={isSubmitting ? "Gerando código..." : "Gerar código"}
+          type="submit"
+          disabled={!domainValue || !isValid || isSubmitting}
         />
       </div>
     </form>

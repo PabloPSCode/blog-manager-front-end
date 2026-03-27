@@ -1,23 +1,78 @@
 import { HeaderNavigation } from "@/components/miscellaneous/HeaderNavigation";
+import { getApiErrorMessage } from "@/services/api";
+import { authService } from "@/services/auth.service";
+import {
+  savePasswordRecoveryContext,
+  clearPasswordRecoveryContext,
+} from "@/utils/passwordRecovery";
+import { showAlertError, showAlertSuccess } from "@/utils/alerts";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CodeInputCard from "./components/CodeInputCard";
+import RecoveryPasswordForm, {
+  RecoveryPasswordInputs,
+} from "./components/RecoveryPasswordForm";
 
 export function RecoveryPassword() {
   const [code, setCode] = useState("");
+  const [requestedDomain, setRequestedDomain] = useState("");
+  const [isGeneratingCode, setIsGeneratingCode] = useState(false);
+  const [isContinuing, setIsContinuing] = useState(false);
   const [wasValidationAttempted, setWasValidationAttempted] = useState(false);
 
   const navigate = useNavigate();
 
-  //TODO-PABLO: Implement function to send recovery password
-  const API_CODE = "123456";
+  const handleGenerateCode = async (data: RecoveryPasswordInputs) => {
+    try {
+      setIsGeneratingCode(true);
+      clearPasswordRecoveryContext();
 
-  const isCodeValid = code === API_CODE;
+      const generatedToken = await authService.createRecoveryPasswordToken({
+        domain: data.domain.trim(),
+      });
 
-  const handleValidateCode = () => {
-    setWasValidationAttempted(true);
-    if (isCodeValid) {
+      setRequestedDomain(generatedToken.domain);
+      setCode("");
+      setWasValidationAttempted(false);
+      showAlertSuccess(generatedToken.message);
+    } catch (error) {
+      showAlertError(
+        getApiErrorMessage(
+          error,
+          "Nao foi possivel gerar o codigo de recuperacao.",
+        ),
+      );
+    } finally {
+      setIsGeneratingCode(false);
+    }
+  };
+
+  const handleValidateCode = async () => {
+    if (!requestedDomain || code.length !== 6) {
+      return;
+    }
+
+    try {
+      setIsContinuing(true);
+      setWasValidationAttempted(false);
+
+      await authService.validateRecoveryPasswordToken({
+        domain: requestedDomain,
+        code,
+      });
+
+      savePasswordRecoveryContext({
+        domain: requestedDomain,
+        code,
+      });
       navigate("/redefinir-senha");
+    } catch (error) {
+      setWasValidationAttempted(true);
+      showAlertError(
+        getApiErrorMessage(error, "Codigo de recuperacao invalido."),
+      );
+    } finally {
+      setIsContinuing(false);
     }
   };
 
@@ -29,17 +84,25 @@ export function RecoveryPassword() {
       <div className="w-full max-w-[440px]">
         <HeaderNavigation screenTitle="Recuperar senha" />
         <h3 className="text-black dark:text-white text-lg md:text-xl font-bold font-primary my-6">
-          Código de recuperação
+          {requestedDomain ? "Código de recuperação" : "Gerar código de recuperação"}
         </h3>
       </div>
-      <CodeInputCard
-        code={code}
-        onChangeCode={setCode}
-        isInvalidCode={
-          wasValidationAttempted && code.length === 6 && !isCodeValid
-        }
-        onValidateCode={handleValidateCode}
-      />
+      {requestedDomain ? (
+        <CodeInputCard
+          code={code}
+          onChangeCode={setCode}
+          isInvalidCode={wasValidationAttempted}
+          onValidateCode={handleValidateCode}
+          actionLabel="Continuar"
+          isSubmitting={isContinuing}
+          description={`Informe o código numérico de 6 dígitos gerado para o domínio ${requestedDomain}.`}
+        />
+      ) : (
+        <RecoveryPasswordForm
+          onSubmit={handleGenerateCode}
+          isSubmitting={isGeneratingCode}
+        />
+      )}
     </div>
   );
 }

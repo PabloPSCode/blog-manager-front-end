@@ -1,11 +1,11 @@
 import type { ICreatePostDTO, IPost, IUpdatePostDTO } from "@/dtos";
+import { api } from "@/services/api";
 import { getFirebaseStorage, getFirestoreDb } from "@/services/firebase";
-import { getAuthenticatedSiteId } from "@/store/auth";
+import { getAuthenticatedJwt, getAuthenticatedSiteId } from "@/store/auth";
 import {
   collection,
   doc,
   getDoc,
-  getDocs,
   setDoc,
   updateDoc,
   type DocumentData,
@@ -90,11 +90,6 @@ const mapPostSnapshot = (
   };
 };
 
-const sortPostsByCreatedAtDesc = (posts: IPost[]) =>
-  [...posts].sort((leftPost, rightPost) =>
-    rightPost.createdAt.localeCompare(leftPost.createdAt),
-  );
-
 const assertPostId = (postId: string) => {
   if (!postId.trim()) {
     throw new Error("A valid post id is required.");
@@ -161,14 +156,13 @@ export const postsService = {
   },
 
   async list(): Promise<IPost[]> {
-    const siteId = getAuthenticatedSiteId();
-    const snapshot = await getDocs(getPostsCollection());
-    const posts = snapshot.docs
-      .map((postSnapshot) => mapPostSnapshot(postSnapshot))
-      .filter((post): post is IPost => post !== null)
-      .filter((post) => post.siteId === siteId && post.deletedAt === null);
+    const response = await api.get<IPost[]>("/posts", {
+      headers: {
+        Authorization: `Bearer ${getAuthenticatedJwt()}`,
+      },
+    });
 
-    return sortPostsByCreatedAtDesc(posts);
+    return response.data;
   },
 
   async update(data: UpdatePostInput): Promise<IPost> {

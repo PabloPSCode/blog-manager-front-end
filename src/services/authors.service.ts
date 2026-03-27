@@ -1,11 +1,11 @@
 import type { IAuthor, ICreateAuthorDTO, IUpdateAuthorDTO } from "@/dtos";
+import { api } from "@/services/api";
 import { getFirebaseStorage, getFirestoreDb } from "@/services/firebase";
-import { getAuthenticatedSiteId } from "@/store/auth";
+import { getAuthenticatedJwt, getAuthenticatedSiteId } from "@/store/auth";
 import {
   collection,
   doc,
   getDoc,
-  getDocs,
   setDoc,
   updateDoc,
   type DocumentData,
@@ -90,11 +90,6 @@ const mapAuthorSnapshot = (
   };
 };
 
-const sortAuthorsByCreatedAtDesc = (authors: IAuthor[]) =>
-  [...authors].sort((leftAuthor, rightAuthor) =>
-    rightAuthor.createdAt.localeCompare(leftAuthor.createdAt),
-  );
-
 const assertAuthorId = (authorId: string) => {
   if (!authorId.trim()) {
     throw new Error("A valid author id is required.");
@@ -156,14 +151,13 @@ export const authorsService = {
   },
 
   async list(): Promise<IAuthor[]> {
-    const siteId = getAuthenticatedSiteId();
-    const snapshot = await getDocs(getAuthorsCollection());
-    const authors = snapshot.docs
-      .map((authorSnapshot) => mapAuthorSnapshot(authorSnapshot))
-      .filter((author): author is IAuthor => author !== null)
-      .filter((author) => author.siteId === siteId && author.deletedAt === null);
+    const response = await api.get<IAuthor[]>("/authors", {
+      headers: {
+        Authorization: `Bearer ${getAuthenticatedJwt()}`,
+      },
+    });
 
-    return sortAuthorsByCreatedAtDesc(authors);
+    return response.data;
   },
 
   async update(data: UpdateAuthorInput): Promise<IAuthor> {

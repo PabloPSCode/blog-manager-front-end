@@ -87,3 +87,13 @@ export const getAuthenticatedSiteId = () => {
 
   return siteId;
 };
+
+export const getAuthenticatedJwt = () => {
+  const jwt = useAuthenticationStore.getState().jwt?.trim();
+
+  if (!jwt) {
+    throw new Error("Authenticated JWT is required.");
+  }
+
+  return jwt;
+};

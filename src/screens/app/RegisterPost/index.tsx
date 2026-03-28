@@ -293,6 +293,7 @@ export function RegisterPost() {
                     type: uploadedFile.type,
                   }}
                   onCancel={handleRemoveUploadedFile}
+                    imageClassName="!w-[320px] aspect-video !rounded-md !object-cover"
                 />
               ) : (
                 <FileInput

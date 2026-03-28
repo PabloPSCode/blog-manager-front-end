@@ -282,6 +282,7 @@ export function EditPostModal({
                 type: uploadedFile.type,
               }}
               onCancel={handleRemoveUploadedFile}
+              imageClassName="w-24 aspect-video rounded-sm"
             />
           ) : (
             <>

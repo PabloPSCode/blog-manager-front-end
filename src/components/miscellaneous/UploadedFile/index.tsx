@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import Feather from "feather-icons-react";
 
 export interface IFile {
@@ -10,9 +11,14 @@ export interface IFile {
 interface UploadedFileProps {
   file: IFile;
   onCancel: () => void;
+  imageClassName?: string;
 }
 
-export function UploadedFile({ file, onCancel }: UploadedFileProps) {
+export function UploadedFile({
+  file,
+  onCancel,
+  imageClassName,
+}: UploadedFileProps) {
   const { name, uri, size, type } = file;
   return (
     <div className="flex flex-col items-start w-full">
@@ -41,7 +47,10 @@ export function UploadedFile({ file, onCancel }: UploadedFileProps) {
           src={uri}
           alt={name}
           width={160}
-          className="w-24 h-24 sm:h-32 sm:w-32 rounded-full object-cover"
+          className={clsx(
+            "w-24 h-24 sm:h-32 sm:w-32 rounded-full object-cover",
+            imageClassName,
+          )}
         />
       ) : (
         <video

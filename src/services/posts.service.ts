@@ -1,239 +1,108 @@
 import type { ICreatePostDTO, IPost, IUpdatePostDTO } from "@/dtos";
-import { api } from "@/services/api";
-import { getFirebaseStorage, getFirestoreDb } from "@/services/firebase";
-import { getAuthenticatedJwt, getAuthenticatedSiteId } from "@/store/auth";
-import {
-  collection,
-  doc,
-  getDoc,
-  setDoc,
-  updateDoc,
-  type DocumentData,
-  type DocumentSnapshot,
-  type QueryDocumentSnapshot,
-} from "firebase/firestore";
-import {
-  deleteObject,
-  getDownloadURL,
-  ref,
-  uploadBytes,
-} from "firebase/storage";
+import { api, getApiErrorMessage } from "@/services/api";
+import { getAuthenticatedJwt } from "@/store/auth";
 
-type PostDocument = Omit<IPost, "id">;
 type CreatePostInput = Omit<ICreatePostDTO, "backgroundUrl" | "siteId"> & {
   backgroundFile?: File | null;
 };
+
 type UpdatePostInput = Omit<IUpdatePostDTO, "backgroundUrl" | "siteId"> & {
   backgroundFile?: File | null;
 };
 
-const POSTS_COLLECTION = "posts";
+const buildPostFormData = (data: {
+  title?: string;
+  authorId?: string;
+  htmlContent?: string;
+  backgroundFile?: File | null;
+}) => {
+  const formData = new FormData();
 
-const getPostsCollection = () => collection(getFirestoreDb(), POSTS_COLLECTION);
+  if (data.title !== undefined) {
+    formData.append("title", data.title);
+  }
 
-const getPostDoc = (postId: string) => doc(getFirestoreDb(), POSTS_COLLECTION, postId);
+  if (data.authorId !== undefined) {
+    formData.append("authorId", data.authorId);
+  }
 
-const toISOString = () => new Date().toISOString();
-const sanitizeFileName = (fileName: string) =>
-  fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
+  if (data.htmlContent !== undefined) {
+    formData.append("htmlContent", data.htmlContent);
+  }
 
-const uploadPostBackground = async (
-  siteId: string,
-  postId: string,
-  file: File,
-) => {
-  const storageRef = ref(
-    getFirebaseStorage(),
-    `posts/${siteId}/${postId}/${Date.now()}-${sanitizeFileName(file.name)}`,
-  );
+  if (data.backgroundFile) {
+    formData.append("backgroundFile", data.backgroundFile);
+  }
 
-  await uploadBytes(storageRef, file, {
-    contentType: file.type,
-  });
-
-  return getDownloadURL(storageRef);
+  return formData;
 };
 
-const deletePostBackgroundByUrl = async (backgroundUrl: string) => {
-  if (!backgroundUrl) {
-    return;
-  }
-
-  try {
-    await deleteObject(ref(getFirebaseStorage(), backgroundUrl));
-  } catch {
-    // Ignore cleanup failures to avoid blocking the main post operation.
-  }
-};
-
-const mapPostSnapshot = (
-  snapshot:
-    | DocumentSnapshot<DocumentData>
-    | QueryDocumentSnapshot<DocumentData>,
-): IPost | null => {
-  if (!snapshot.exists()) {
-    return null;
-  }
-
-  const data = snapshot.data() as PostDocument;
-
-  return {
-    id: snapshot.id,
-    siteId: data.siteId,
-    title: data.title,
-    htmlContent: data.htmlContent,
-    backgroundUrl: data.backgroundUrl,
-    authorId: data.authorId,
-    createdAt: data.createdAt,
-    updatedAt: data.updatedAt,
-    deletedAt: data.deletedAt,
-  };
-};
-
-const assertPostId = (postId: string) => {
-  if (!postId.trim()) {
-    throw new Error("A valid post id is required.");
-  }
-};
-
-const requirePost = async (
-  postId: string,
-  siteId: string,
-): Promise<IPost> => {
-  assertPostId(postId);
-
-  const snapshot = await getDoc(getPostDoc(postId));
-  const post = mapPostSnapshot(snapshot);
-
-  if (!post) {
-    throw new Error(`Post ${postId} was not found.`);
-  }
-
-  if (post.siteId !== siteId) {
-    throw new Error(`Post ${postId} was not found for the authenticated site.`);
-  }
-
-  return post;
-};
+const getAuthHeaders = () => ({
+  Authorization: `Bearer ${getAuthenticatedJwt()}`,
+});
 
 export const postsService = {
   async create(data: CreatePostInput): Promise<IPost> {
-    const siteId = getAuthenticatedSiteId();
-    const postRef = doc(getPostsCollection());
-    const timestamp = toISOString();
-    let backgroundUrl = "";
+    try {
+      const response = await api.post<IPost>(
+        "/posts",
+        buildPostFormData(data),
+        {
+          headers: getAuthHeaders(),
+        },
+      );
 
-    if (data.backgroundFile) {
-      backgroundUrl = await uploadPostBackground(
-        siteId,
-        postRef.id,
-        data.backgroundFile,
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        getApiErrorMessage(error, "Nao foi possivel cadastrar o post."),
       );
     }
-
-    const post: PostDocument = {
-      siteId,
-      title: data.title,
-      htmlContent: data.htmlContent,
-      backgroundUrl,
-      authorId: data.authorId,
-      createdAt: timestamp,
-      updatedAt: timestamp,
-      deletedAt: null,
-    };
-
-    try {
-      await setDoc(postRef, post);
-    } catch (error) {
-      await deletePostBackgroundByUrl(backgroundUrl);
-      throw error;
-    }
-
-    return {
-      id: postRef.id,
-      ...post,
-    };
   },
 
   async list(): Promise<IPost[]> {
-    const response = await api.get<IPost[]>("/posts", {
-      headers: {
-        Authorization: `Bearer ${getAuthenticatedJwt()}`,
-      },
-    });
+    try {
+      const response = await api.get<IPost[]>("/posts", {
+        headers: getAuthHeaders(),
+      });
 
-    return response.data;
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        getApiErrorMessage(error, "Nao foi possivel carregar os posts."),
+      );
+    }
   },
 
   async update(data: UpdatePostInput): Promise<IPost> {
-    const siteId = getAuthenticatedSiteId();
-    const existingPost = await requirePost(data.id, siteId);
-
-    if (existingPost.deletedAt !== null) {
-      throw new Error(`Post ${data.id} has been deleted and cannot be updated.`);
-    }
-
-    const nextBackgroundUrl = data.backgroundFile
-      ? await uploadPostBackground(siteId, data.id, data.backgroundFile)
-      : existingPost.backgroundUrl;
-
-    const updates: Partial<PostDocument> = {
-      siteId,
-      updatedAt: toISOString(),
-      backgroundUrl: nextBackgroundUrl,
-    };
-
-    if (data.title !== undefined) {
-      updates.title = data.title;
-    }
-
-    if (data.htmlContent !== undefined) {
-      updates.htmlContent = data.htmlContent;
-    }
-
-    if (data.authorId !== undefined) {
-      updates.authorId = data.authorId;
-    }
-
     try {
-      await updateDoc(getPostDoc(data.id), updates);
+      const response = await api.patch<IPost>(
+        `/posts/${data.id}`,
+        buildPostFormData(data),
+        {
+          headers: getAuthHeaders(),
+        },
+      );
+
+      return response.data;
     } catch (error) {
-      if (data.backgroundFile) {
-        await deletePostBackgroundByUrl(nextBackgroundUrl);
-      }
-      throw error;
+      throw new Error(
+        getApiErrorMessage(error, "Nao foi possivel atualizar o post."),
+      );
     }
-
-    if (data.backgroundFile && existingPost.backgroundUrl) {
-      await deletePostBackgroundByUrl(existingPost.backgroundUrl);
-    }
-
-    return {
-      ...existingPost,
-      ...updates,
-      id: data.id,
-    };
   },
 
   async delete(postId: string): Promise<IPost> {
-    const siteId = getAuthenticatedSiteId();
-    const existingPost = await requirePost(postId, siteId);
+    try {
+      const response = await api.delete<IPost>(`/posts/${postId}`, {
+        headers: getAuthHeaders(),
+      });
 
-    if (existingPost.deletedAt !== null) {
-      return existingPost;
+      return response.data;
+    } catch (error) {
+      throw new Error(
+        getApiErrorMessage(error, "Nao foi possivel remover o post."),
+      );
     }
-
-    const timestamp = toISOString();
-
-    await updateDoc(getPostDoc(postId), {
-      deletedAt: timestamp,
-      updatedAt: timestamp,
-    });
-
-    return {
-      ...existingPost,
-      deletedAt: timestamp,
-      updatedAt: timestamp,
-    };
   },
 };

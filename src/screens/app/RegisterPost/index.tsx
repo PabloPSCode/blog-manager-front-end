@@ -1,7 +1,5 @@
 import {
   DESCRIPTION_MIN_MESSAGE,
-  FILE_MAX_SIZE_MESSAGE,
-  FILE_TYPE_UNSUPPORTED_MESSAGE,
   REQUIRED_FIELD_MESSAGE,
 } from "@/appConstants/index";
 import { Button } from "@/components/buttons/Button";
@@ -18,7 +16,7 @@ import { postsService } from "@/services/posts.service";
 import { showAlertError, showAlertSuccess } from "@/utils/alerts";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ChangeEvent, useEffect, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import * as yup from "yup";
 
@@ -26,11 +24,10 @@ interface RegisterPostInputs {
   title: string;
   authorId: string;
   htmlContent: string;
-  backgroundFile: any;
+  backgroundFile?: any;
 }
 
 export function RegisterPost() {
-  const MAX_POST_COVER_FILE_SIZE = 2 * 1024 * 1024; //2MB
   const MIN_POST_CONTENT_LENGTH = 24;
 
   const [authors, setAuthors] = useState<IAuthor[]>([]);
@@ -47,25 +44,15 @@ export function RegisterPost() {
       .trim();
 
   const validationSchema = yup.object({
-    title: yup.string().required(REQUIRED_FIELD_MESSAGE),
-    authorId: yup.string().required(REQUIRED_FIELD_MESSAGE),
-    backgroundFile: yup
-      .mixed()
+    title: yup.string().trim().required(REQUIRED_FIELD_MESSAGE),
+    authorId: yup
+      .string()
+      .trim()
       .required(REQUIRED_FIELD_MESSAGE)
-      .test("fileSize", FILE_MAX_SIZE_MESSAGE + "2MB", (value: any) => {
-        return value && value[0] && value[0].size <= MAX_POST_COVER_FILE_SIZE;
-      })
-      .test(
-        "fileType",
-        FILE_TYPE_UNSUPPORTED_MESSAGE + ".jpeg ou .png",
-        (value: any) => {
-          return (
-            value &&
-            value[0] &&
-            ["image/jpeg", "image/png", "image/jpg"].includes(value[0].type)
-          );
-        },
+      .test("selected-author", REQUIRED_FIELD_MESSAGE, (value) =>
+        Boolean(value?.trim()),
       ),
+    backgroundFile: yup.mixed().optional(),
     htmlContent: yup
       .string()
       .required(REQUIRED_FIELD_MESSAGE)
@@ -85,16 +72,19 @@ export function RegisterPost() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    control,
+    formState: { errors, isValid, touchedFields },
     setValue,
     reset,
   } = useForm<RegisterPostInputs>({
     resolver: yupResolver(validationSchema),
     defaultValues: {
+      title: "",
       authorId: "",
       htmlContent: "",
+      backgroundFile: undefined,
     },
-    mode: "onChange",
+    mode: "all",
   });
 
   const authorOptions = [
@@ -161,15 +151,17 @@ export function RegisterPost() {
     });
     setWasFileUploaded(false);
     setValue("backgroundFile", undefined, {
-      shouldValidate: true,
       shouldDirty: true,
-      shouldTouch: true,
     });
   };
 
   const handleRegisterPost: SubmitHandler<RegisterPostInputs> = async (
     data,
   ) => {
+    if (isSubmitting) {
+      return;
+    }
+
     try {
       setIsSubmitting(true);
 
@@ -213,9 +205,6 @@ export function RegisterPost() {
           className="bg-white dark:bg-slate-900 rounded-lg p-6 md:p-8"
           onSubmit={handleSubmit(handleRegisterPost)}
         >
-          <input type="hidden" {...register("authorId")} />
-          <input type="hidden" {...register("htmlContent")} />
-
           <div className="w-full flex flex-col gap-4">
             <div>
               <TextInput
@@ -223,7 +212,7 @@ export function RegisterPost() {
                 placeholder="Título do post"
                 {...register("title")}
               />
-              {errors.title && (
+              {touchedFields.title && errors.title && (
                 <ErrorMessage errorMessage={errors.title?.message} />
               )}
             </div>
@@ -232,48 +221,58 @@ export function RegisterPost() {
               <span className="text-gray-800 dark:text-gray-200 text-[12px] lg:text-sm mb-1">
                 Conteúdo do post
               </span>
-              <RichTextInput
-                initialData=""
-                placeholder="Escreva ou cole aqui o conteúdo do seu post. Atente-se á formatação."
-                className="!w-full mt-1 border-gray-300 bg-white min-h-[240px]"
-                onChange={(html) => {
-                  setValue("htmlContent", html, {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                    shouldTouch: true,
-                  });
-                }}
-                findAndReplace={false}
-                selectAll={false}
-                removeFormat={false}
-                fontSize={false}
-                fontColor={false}
-                fontBackgroundColor={false}
-                indent={false}
-                horizontalLine={false}
-                mediaEmbed={false}
-                codeBlock={false}
-                specialCharacters={false}
+              <Controller
+                name="htmlContent"
+                control={control}
+                render={({ field }) => (
+                  <RichTextInput
+                    initialData={field.value}
+                    placeholder="Escreva ou cole aqui o conteúdo do seu post. Atente-se á formatação."
+                    className="!w-full mt-1 border-gray-300 bg-white min-h-[240px]"
+                    onChange={field.onChange}
+                    onBlur={field.onBlur}
+                    findAndReplace={false}
+                    selectAll={false}
+                    removeFormat={false}
+                    fontSize={false}
+                    fontColor={false}
+                    fontBackgroundColor={false}
+                    indent={false}
+                    horizontalLine={false}
+                    mediaEmbed={false}
+                    codeBlock={false}
+                    specialCharacters={false}
+                  />
+                )}
               />
-              {errors.htmlContent && (
+              {touchedFields.htmlContent && errors.htmlContent && (
                 <ErrorMessage errorMessage={errors.htmlContent?.message} />
               )}
             </div>
 
             <div>
-              <Select
-                label="Autor"
-                options={authorOptions}
-                isSearchable={false}
-                onSelectOption={(selectedOption) => {
-                  setValue("authorId", String(selectedOption.value), {
-                    shouldValidate: true,
-                    shouldDirty: true,
-                    shouldTouch: true,
-                  });
-                }}
+              <Controller
+                name="authorId"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    label="Autor"
+                    options={authorOptions}
+                    selectedOption={
+                      authorOptions.find((option) => option.value === field.value) ??
+                      null
+                    }
+                    isSearchable={false}
+                    onSelectOption={(selectedOption) => {
+                      field.onChange(String(selectedOption.value));
+                    }}
+                    onBlur={() => {
+                      field.onBlur();
+                    }}
+                  />
+                )}
               />
-              {errors.authorId && (
+              {touchedFields.authorId && errors.authorId && (
                 <ErrorMessage errorMessage={errors.authorId?.message} />
               )}
               {!isLoadingAuthors && authors.length === 0 && (
@@ -293,7 +292,7 @@ export function RegisterPost() {
                     type: uploadedFile.type,
                   }}
                   onCancel={handleRemoveUploadedFile}
-                    imageClassName="!w-[320px] aspect-video !rounded-md !object-cover"
+                  imageClassName="!w-[320px] aspect-video !rounded-md !object-cover"
                 />
               ) : (
                 <FileInput
@@ -305,11 +304,6 @@ export function RegisterPost() {
                   {...register("backgroundFile")}
                 />
               )}
-              {errors.backgroundFile && (
-                <ErrorMessage
-                  errorMessage={errors.backgroundFile?.message as string}
-                />
-              )}
             </div>
           </div>
 
@@ -317,7 +311,7 @@ export function RegisterPost() {
             <Button
               title={isSubmitting ? "Cadastrando..." : "Cadastrar post"}
               type="submit"
-              disabled={!isValid || isSubmitting || isLoadingAuthors || authors.length === 0}
+              disabled={!isValid}
             />
           </div>
         </form>

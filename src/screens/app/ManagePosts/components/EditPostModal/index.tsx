@@ -1,7 +1,5 @@
 import {
   DESCRIPTION_MIN_MESSAGE,
-  FILE_MAX_SIZE_MESSAGE,
-  FILE_TYPE_UNSUPPORTED_MESSAGE,
   REQUIRED_FIELD_MESSAGE,
 } from "@/appConstants/index";
 import { Button } from "@/components/buttons/Button";
@@ -21,7 +19,7 @@ import {
 } from "@/styles/react-modal";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ChangeEvent, KeyboardEvent, MouseEvent, useEffect, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import Modal from "react-modal";
 import * as yup from "yup";
 
@@ -60,7 +58,6 @@ export function EditPostModal({
   const [uploadedFile, setUploadedFile] = useState<IFile | null>(null);
   const [wasFileUploaded, setWasFileUploaded] = useState(false);
 
-  const MAX_POST_COVER_FILE_SIZE = 2 * 1024 * 1024;
   const MIN_POST_CONTENT_LENGTH = 24;
 
   const getPlainTextFromHtml = (value: string) =>
@@ -70,30 +67,15 @@ export function EditPostModal({
       .trim();
 
   const validationSchema = yup.object({
-    title: yup.string().required(REQUIRED_FIELD_MESSAGE),
-    authorId: yup.string().required(REQUIRED_FIELD_MESSAGE),
-    backgroundFile: yup
-      .mixed()
-      .test("fileSize", FILE_MAX_SIZE_MESSAGE + "2MB", (value: any) => {
-        if (!value || value.length === 0) {
-          return true;
-        }
-
-        return value[0].size <= MAX_POST_COVER_FILE_SIZE;
-      })
-      .test(
-        "fileType",
-        FILE_TYPE_UNSUPPORTED_MESSAGE + ".jpeg ou .png",
-        (value: any) => {
-          if (!value || value.length === 0) {
-            return true;
-          }
-
-          return ["image/jpeg", "image/png", "image/jpg"].includes(
-            value[0].type,
-          );
-        },
+    title: yup.string().trim().required(REQUIRED_FIELD_MESSAGE),
+    authorId: yup
+      .string()
+      .trim()
+      .required(REQUIRED_FIELD_MESSAGE)
+      .test("selected-author", REQUIRED_FIELD_MESSAGE, (value) =>
+        Boolean(value?.trim()),
       ),
+    backgroundFile: yup.mixed().optional(),
     htmlContent: yup
       .string()
       .required(REQUIRED_FIELD_MESSAGE)
@@ -115,11 +97,12 @@ export function EditPostModal({
     handleSubmit,
     reset,
     setValue,
-    watch,
-    formState: { errors, isValid },
+    control,
+    trigger,
+    formState: { errors, isValid, touchedFields },
   } = useForm<EditPostModalInputs>({
     resolver: yupResolver(validationSchema),
-    mode: "onChange",
+    mode: "all",
     defaultValues: {
       title: "",
       authorId: "",
@@ -127,10 +110,6 @@ export function EditPostModal({
       backgroundFile: undefined,
     },
   });
-
-  const selectedAuthorId = watch("authorId");
-  const selectedAuthorOption =
-    authorOptions.find((option) => option.value === selectedAuthorId) ?? null;
 
   useEffect(() => {
     reset({
@@ -144,7 +123,10 @@ export function EditPostModal({
       revokePreviewUrl(currentFile);
       return null;
     });
-  }, [post, reset]);
+    if (post) {
+      void trigger();
+    }
+  }, [post, reset, trigger]);
 
   useEffect(() => {
     return () => revokePreviewUrl(uploadedFile);
@@ -178,13 +160,15 @@ export function EditPostModal({
     });
     setWasFileUploaded(false);
     setValue("backgroundFile", undefined, {
-      shouldValidate: true,
       shouldDirty: true,
-      shouldTouch: true,
     });
   };
 
   const handleSubmitForm: SubmitHandler<EditPostModalInputs> = (data) => {
+    if (isSubmitting) {
+      return;
+    }
+
     onConfirmAction(data);
   };
 
@@ -208,31 +192,39 @@ export function EditPostModal({
         key={post?.id ?? "post-form"}
         onSubmit={handleSubmit(handleSubmitForm)}
       >
-        <input type="hidden" {...register("authorId")} />
-        <input type="hidden" {...register("htmlContent")} />
         <div className="my-4">
           <TextInput
             inputLabel="Título"
             placeholder="Novo título do post"
             {...register("title")}
           />
-          {errors.title && <ErrorMessage errorMessage={errors.title?.message} />}
+          {touchedFields.title && errors.title && (
+            <ErrorMessage errorMessage={errors.title?.message} />
+          )}
         </div>
         <div className="my-4">
-          <SelectInput
-            label="Autor"
-            options={authorOptions}
-            selectedOption={selectedAuthorOption}
-            isSearchable={false}
-            onSelectOption={(selectedOption) => {
-              setValue("authorId", String(selectedOption.value), {
-                shouldValidate: true,
-                shouldDirty: true,
-                shouldTouch: true,
-              });
-            }}
+          <Controller
+            name="authorId"
+            control={control}
+            render={({ field }) => (
+              <SelectInput
+                label="Autor"
+                options={authorOptions}
+                selectedOption={
+                  authorOptions.find((option) => option.value === field.value) ??
+                  null
+                }
+                isSearchable={false}
+                onSelectOption={(selectedOption) => {
+                  field.onChange(String(selectedOption.value));
+                }}
+                onBlur={() => {
+                  field.onBlur();
+                }}
+              />
+            )}
           />
-          {errors.authorId && (
+          {touchedFields.authorId && errors.authorId && (
             <ErrorMessage errorMessage={errors.authorId?.message} />
           )}
         </div>
@@ -240,35 +232,36 @@ export function EditPostModal({
           <span className="text-gray-800 dark:text-gray-200 text-[12px] lg:text-sm mb-1">
             Conteúdo do post
           </span>
-          <RichTextInput
-            key={post?.id ?? "post-editor"}
-            initialData={post?.htmlContent ?? ""}
-            placeholder="Atualize o conteúdo do post."
-            className="!w-full mt-1 border-gray-300 bg-white min-h-[240px]"
-            onChange={(html) => {
-              setValue("htmlContent", html, {
-                shouldValidate: true,
-                shouldDirty: true,
-                shouldTouch: true,
-              });
-            }}
-            findAndReplace={false}
-            selectAll={false}
-            removeFormat={false}
-            highlight={false}
-            fontFamily={false}
-            fontSize={false}
-            fontColor={false}
-            fontBackgroundColor={false}
-            alignment={false}
-            indent={false}
-            blockQuote={false}
-            horizontalLine={false}
-            mediaEmbed={false}
-            codeBlock={false}
-            specialCharacters={false}
+          <Controller
+            name="htmlContent"
+            control={control}
+            render={({ field }) => (
+              <RichTextInput
+                key={post?.id ?? "post-editor"}
+                initialData={field.value}
+                placeholder="Atualize o conteúdo do post."
+                className="!w-full mt-1 border-gray-300 bg-white min-h-[240px]"
+                onChange={field.onChange}
+                onBlur={field.onBlur}
+                findAndReplace={false}
+                selectAll={false}
+                removeFormat={false}
+                highlight={false}
+                fontFamily={false}
+                fontSize={false}
+                fontColor={false}
+                fontBackgroundColor={false}
+                alignment={false}
+                indent={false}
+                blockQuote={false}
+                horizontalLine={false}
+                mediaEmbed={false}
+                codeBlock={false}
+                specialCharacters={false}
+              />
+            )}
           />
-          {errors.htmlContent && (
+          {touchedFields.htmlContent && errors.htmlContent && (
             <ErrorMessage errorMessage={errors.htmlContent?.message} />
           )}
         </div>
@@ -308,14 +301,11 @@ export function EditPostModal({
               />
             </>
           )}
-          {errors.backgroundFile && (
-            <ErrorMessage errorMessage={errors.backgroundFile?.message as string} />
-          )}
         </div>
         <Button
           title={isSubmitting ? "Salvando..." : "Salvar dados"}
           type="submit"
-          disabled={!isValid || isSubmitting}
+          disabled={!isValid}
         />
         <button
           type="button"

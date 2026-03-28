@@ -33,24 +33,11 @@ export function RegisterAuthor() {
   const MAX_TUTOR_BIO_LENGTH = 500;
 
   const validationSchema = yup.object({
-    name: yup.string().required(REQUIRED_FIELD_MESSAGE),
-    photo_file: yup
-      .mixed()
-      .test(
-        "fileType",
-        "A foto deve ser um arquivo de imagem (jpg, jpeg, png)",
-        (value: any) => {
-          if (!value || value.length === 0) {
-            return true;
-          }
-
-          const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
-          return allowedTypes.includes(value[0].type);
-        },
-      ),
-
+    name: yup.string().trim().required(REQUIRED_FIELD_MESSAGE),
+    photo_file: yup.mixed().optional(),
     bio: yup
       .string()
+      .trim()
       .required(REQUIRED_FIELD_MESSAGE)
       .min(MIN_TUTOR_BIO_LENGTH, DESCRIPTION_MIN_MESSAGE),
   });
@@ -64,13 +51,18 @@ export function RegisterAuthor() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors, isValid, touchedFields },
     watch,
     setValue,
     reset,
   } = useForm<RegisterAuthorInputs>({
     resolver: yupResolver(validationSchema),
-    mode: "onChange",
+    defaultValues: {
+      name: "",
+      bio: "",
+      photo_file: undefined,
+    },
+    mode: "all",
   });
 
   const bioValue = watch("bio");
@@ -107,15 +99,17 @@ export function RegisterAuthor() {
     });
     setWasFileUploaded(false);
     setValue("photo_file", undefined, {
-      shouldValidate: true,
       shouldDirty: true,
-      shouldTouch: true,
     });
   };
 
   const handleRegisterAuthor: SubmitHandler<RegisterAuthorInputs> = async (
     data,
   ) => {
+    if (isSubmitting) {
+      return;
+    }
+
     try {
       setIsSubmitting(true);
 
@@ -159,7 +153,7 @@ export function RegisterAuthor() {
               placeholder="Nome do autor"
               {...register("name")}
             />
-            {errors && errors.name && (
+            {touchedFields.name && errors.name && (
               <ErrorMessage errorMessage={errors.name?.message} />
             )}
           </div>
@@ -184,11 +178,6 @@ export function RegisterAuthor() {
                 {...register("photo_file")}
               />
             )}
-            {errors && errors.photo_file && (
-              <ErrorMessage
-                errorMessage={errors.photo_file?.message as string}
-              />
-            )}
           </div>
 
           <div className="w-full mb-4">
@@ -200,7 +189,7 @@ export function RegisterAuthor() {
               placeholder="Biografia do autor"
               {...register("bio")}
             />
-            {errors && errors.bio && (
+            {touchedFields.bio && errors.bio && (
               <ErrorMessage errorMessage={errors.bio?.message} />
             )}
           </div>
@@ -209,7 +198,7 @@ export function RegisterAuthor() {
             <Button
               title={isSubmitting ? "Cadastrando..." : "Cadastrar Autor"}
               type="submit"
-              disabled={!isValid || isSubmitting}
+              disabled={!isValid}
             />
           </div>
         </form>

@@ -54,24 +54,11 @@ export function EditAuthorModal({
   const MAX_TUTOR_BIO_LENGTH = 500;
 
   const validationSchema = yup.object({
-    name: yup.string().required(REQUIRED_FIELD_MESSAGE),
-    photo_file: yup
-      .mixed()
-      .test(
-        "fileType",
-        "A foto deve ser um arquivo de imagem (jpg, jpeg, png)",
-        (value: any) => {
-          if (!value || value.length === 0) {
-            return true;
-          }
-
-          const allowedTypes = ["image/jpeg", "image/png", "image/jpg"];
-
-          return allowedTypes.includes(value[0].type);
-        },
-      ),
+    name: yup.string().trim().required(REQUIRED_FIELD_MESSAGE),
+    photo_file: yup.mixed().optional(),
     bio: yup
       .string()
+      .trim()
       .required(REQUIRED_FIELD_MESSAGE)
       .min(MIN_TUTOR_BIO_LENGTH, DESCRIPTION_MIN_MESSAGE),
   });
@@ -88,10 +75,11 @@ export function EditAuthorModal({
     reset,
     watch,
     setValue,
-    formState: { errors, isValid },
+    trigger,
+    formState: { errors, isValid, touchedFields },
   } = useForm<EditAuthorModalInputs>({
     resolver: yupResolver(validationSchema),
-    mode: "onChange",
+    mode: "all",
     defaultValues: {
       name: "",
       bio: "",
@@ -112,7 +100,10 @@ export function EditAuthorModal({
       revokePreviewUrl(currentFile);
       return null;
     });
-  }, [author, reset]);
+    if (author) {
+      void trigger();
+    }
+  }, [author, reset, trigger]);
 
   useEffect(() => {
     return () => revokePreviewUrl(uploadedFile);
@@ -146,13 +137,15 @@ export function EditAuthorModal({
     });
     setWasFileUploaded(false);
     setValue("photo_file", undefined, {
-      shouldValidate: true,
       shouldDirty: true,
-      shouldTouch: true,
     });
   };
 
   const handleSubmitForm: SubmitHandler<EditAuthorModalInputs> = (data) => {
+    if (isSubmitting) {
+      return;
+    }
+
     onConfirmAction(data);
   };
 
@@ -182,7 +175,7 @@ export function EditAuthorModal({
             placeholder="Nome do autor"
             {...register("name")}
           />
-          {errors && errors.name && (
+          {touchedFields.name && errors.name && (
             <ErrorMessage errorMessage={errors.name?.message} />
           )}
         </div>
@@ -195,7 +188,7 @@ export function EditAuthorModal({
             placeholder="Biografia do autor"
             {...register("bio")}
           />
-          {errors && errors.bio && (
+          {touchedFields.bio && errors.bio && (
             <ErrorMessage errorMessage={errors.bio?.message} />
           )}
         </div>
@@ -234,14 +227,11 @@ export function EditAuthorModal({
               />
             </>
           )}
-          {errors && errors.photo_file && (
-            <ErrorMessage errorMessage={errors.photo_file?.message as string} />
-          )}
         </div>
         <Button
           title={isSubmitting ? "Salvando..." : "Salvar dados"}
           type="submit"
-          disabled={!isValid || isSubmitting}
+          disabled={!isValid}
         />
         <button
           type="button"

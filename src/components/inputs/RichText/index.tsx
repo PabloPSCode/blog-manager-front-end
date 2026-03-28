@@ -52,6 +52,8 @@ export interface RichTextEditorProps {
   placeholder?: string;
   /** Callback com o HTML sempre que houver mudança. */
   onChange?: (html: string) => void;
+  /** Callback disparado quando o editor perde foco. */
+  onBlur?: () => void;
 
   /** Classe do container externo. */
   className?: string;
@@ -258,6 +260,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
   initialData = "<p>Olá do CKEditor 5 no React! ✍️</p>",
   placeholder = "Escreva seu conteúdo…",
   onChange,
+  onBlur,
 
   // Classe
   className,
@@ -431,6 +434,9 @@ const RichTextEditor: React.FC<RichTextEditorProps> = ({
         }}
         onChange={(_, editor) => {
           onChange?.(editor.getData());
+        }}
+        onBlur={() => {
+          onBlur?.();
         }}
       />
     </div>

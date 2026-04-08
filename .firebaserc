@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "ps-courses-admin-dashboard-rct"
-  }
+    "default": "pls-blog-manager",
+    "pls-blog-manager": "pls-blog-manager"
+  },
+  "targets": {},
+  "etags": {}
 }

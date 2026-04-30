@@ -47,7 +47,7 @@ export function DeleteModal({
         content="Essa ação não é reversível!"
         className="text-center text-gray-700 dark:text-gray-100 mb-6  text-[13px] md:text-[14px]"
       />
-      <div className="flex flex-row items-center justify-around w-full md:w-[400px]">
+      <div className="flex flex-row items-center justify-around w-full md:w-[400px] mx-auto">
         <button
           onClick={onClose}
           className="text-black dark:text-white bg-gray-200 dark:bg-slate-700  px-4 py-2 rounded-lg  text-[13px] md:text-[14px] mr-4"

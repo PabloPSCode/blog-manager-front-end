@@ -178,7 +178,7 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           </Link>
           <Title
             content="GERENCIADOR DE BLOGS"
-            className="mb-8 font-bold tracking-wide"
+            className="mb-8 font-bold tracking-wide dark:text-white"
           />
           {menuItems.map((item, idx) => (
             (() => {
@@ -207,8 +207,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                       <ListItem
                         className={`w-full rounded-r-xl rounded-l-none text-[12px] lg:text-[14px] font-secondary ${
                           isOpen || itemIsActive
-                            ? "bg-violet-50 text-primary hover:bg-violet-50 focus:bg-violet-50 dark:bg-slate-800 dark:text-primary-light dark:hover:bg-slate-800 dark:hover:text-white dark:focus:bg-slate-800"
-                            : "text-black dark:text-white hover:text-slate-800 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-800 focus:text-slate-800 dark:focus:text-white focus:bg-gray-200 dark:focus:bg-slate-800"
+                            ? "bg-violet-50 text-primary hover:bg-violet-50 focus:bg-violet-50 dark:bg-transparent dark:text-primary-light dark:hover:bg-transparent dark:hover:text-white dark:focus:bg-transparent"
+                            : "text-black dark:text-white hover:text-slate-800 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-transparent focus:text-slate-800 dark:focus:text-white focus:bg-gray-200 dark:focus:bg-transparent"
                         }`}
                       >
                         <FeatherIcon
@@ -239,8 +239,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                             <ListItem
                               className={`w-full rounded-r-lg rounded-l-none border-l-2 py-2 ${
                                 actionIsActive
-                                  ? "border-primary bg-violet-50 text-primary hover:bg-violet-50 focus:bg-violet-50 dark:bg-slate-800 dark:text-primary-light dark:hover:bg-slate-800 dark:hover:text-white dark:focus:bg-slate-800"
-                                  : "border-transparent text-primary dark:text-primary-light hover:border-gray-300 hover:text-slate-800 hover:bg-gray-200 dark:hover:border-slate-500 dark:hover:text-white dark:hover:bg-slate-800 focus:border-gray-300 focus:text-slate-800 focus:bg-gray-200 dark:focus:border-slate-500 dark:focus:text-white dark:focus:bg-slate-800"
+                                  ? "border-primary bg-violet-50 text-primary hover:bg-violet-50 focus:bg-violet-50 dark:bg-transparent dark:text-primary-light dark:hover:bg-transparent dark:hover:text-white dark:focus:bg-transparent"
+                                  : "border-transparent text-primary dark:text-primary-light hover:border-gray-300 hover:text-slate-800 hover:bg-gray-200 dark:hover:border-slate-500 dark:hover:text-white dark:hover:bg-transparent focus:border-gray-300 focus:text-slate-800 focus:bg-gray-200 dark:focus:border-slate-500 dark:focus:text-white dark:focus:bg-transparent"
                               }`}
                             >
                               {action.title}
@@ -268,8 +268,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               <ListItem
                 className={`rounded-r-xl rounded-l-none text-[12px] lg:text-[14px] font-secondary ${
                   breadCrumbAction === "perguntas-frequentes"
-                    ? "bg-violet-50 text-primary hover:bg-violet-50 focus:bg-violet-50 dark:bg-slate-800 dark:text-primary-light dark:hover:bg-slate-800 dark:hover:text-white dark:focus:bg-slate-800"
-                    : "text-black dark:text-white hover:text-slate-800 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-800 focus:text-slate-800 dark:focus:text-white focus:bg-gray-200 dark:focus:bg-slate-800"
+                    ? "bg-violet-50 text-primary hover:bg-violet-50 focus:bg-violet-50 dark:bg-transparent dark:text-primary-light dark:hover:bg-transparent dark:hover:text-white dark:focus:bg-transparent"
+                    : "text-black dark:text-white hover:text-slate-800 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-transparent focus:text-slate-800 dark:focus:text-white focus:bg-gray-200 dark:focus:bg-transparent"
                 }`}
               >
                 <FeatherIcon
@@ -427,8 +427,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                       <ListItem
                         className={`w-full rounded-r-xl rounded-l-none text-[12px] lg:text-[14px] ${
                           isOpen || itemIsActive
-                            ? "bg-violet-50 text-primary hover:bg-violet-50 focus:bg-violet-50 dark:bg-slate-800 dark:text-primary-light dark:hover:bg-slate-800 dark:hover:text-white dark:focus:bg-slate-800"
-                            : "text-black dark:text-white hover:text-slate-800 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-800 focus:text-slate-800 dark:focus:text-white focus:bg-gray-200 dark:focus:bg-slate-800"
+                            ? "bg-violet-50 text-primary hover:bg-violet-50 focus:bg-violet-50 dark:bg-transparent dark:text-primary-light dark:hover:bg-transparent dark:hover:text-white dark:focus:bg-transparent"
+                            : "text-black dark:text-white hover:text-slate-800 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-transparent focus:text-slate-800 dark:focus:text-white focus:bg-gray-200 dark:focus:bg-transparent"
                         }`}
                       >
                         <FeatherIcon
@@ -459,8 +459,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                             <ListItem
                               className={`w-full rounded-r-lg rounded-l-none border-l-2 py-2 ${
                                 actionIsActive
-                                  ? "border-primary bg-violet-50 text-primary hover:bg-violet-50 focus:bg-violet-50 dark:bg-slate-800 dark:text-primary-light dark:hover:bg-slate-800 dark:hover:text-white dark:focus:bg-slate-800"
-                                  : "border-transparent text-primary dark:text-primary-light hover:border-gray-300 hover:text-slate-800 hover:bg-gray-200 dark:hover:border-slate-500 dark:hover:text-white dark:hover:bg-slate-800 focus:border-gray-300 focus:text-slate-800 focus:bg-gray-200 dark:focus:border-slate-500 dark:focus:text-white dark:focus:bg-slate-800"
+                                  ? "border-primary bg-violet-50 text-primary hover:bg-violet-50 focus:bg-violet-50 dark:bg-transparent dark:text-primary-light dark:hover:bg-transparent dark:hover:text-white dark:focus:bg-transparent"
+                                  : "border-transparent text-primary dark:text-primary-light hover:border-gray-300 hover:text-slate-800 hover:bg-gray-200 dark:hover:border-slate-500 dark:hover:text-white dark:hover:bg-transparent focus:border-gray-300 focus:text-slate-800 focus:bg-gray-200 dark:focus:border-slate-500 dark:focus:text-white dark:focus:bg-transparent"
                               }`}
                             >
                               {action.title}
@@ -488,8 +488,8 @@ export const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               <ListItem
                 className={`rounded-r-xl rounded-l-none text-[12px] lg:text-[14px] ${
                   breadCrumbAction === "perguntas-frequentes"
-                    ? "bg-violet-50 text-primary hover:bg-violet-50 focus:bg-violet-50 dark:bg-slate-800 dark:text-primary-light dark:hover:bg-slate-800 dark:hover:text-white dark:focus:bg-slate-800"
-                    : "text-black dark:text-white hover:text-slate-800 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-slate-800 focus:text-slate-800 dark:focus:text-white focus:bg-gray-200 dark:focus:bg-slate-800"
+                    ? "bg-violet-50 text-primary hover:bg-violet-50 focus:bg-violet-50 dark:bg-transparent dark:text-primary-light dark:hover:bg-transparent dark:hover:text-white dark:focus:bg-transparent"
+                    : "text-black dark:text-white hover:text-slate-800 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-transparent focus:text-slate-800 dark:focus:text-white focus:bg-gray-200 dark:focus:bg-transparent"
                 }`}
               >
                 <FeatherIcon

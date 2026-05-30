@@ -135,7 +135,7 @@ export function ManageAuthors() {
             </Link>
           </div>
         </div>
-        <div className="w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6 px-4 pb-4">
+        <div className="w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6 px-4 pb-4">
           {isLoadingAuthors ? (
             <div className="col-span-full rounded-lg bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 p-5 text-sm text-gray-700 dark:text-gray-300">
               Carregando autores...

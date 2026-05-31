@@ -17,6 +17,7 @@ export function InitialScreen() {
         domain: data.domain.trim(),
         password: data.password,
       });
+      
       const { jwt, ...site } = authenticatedSite;
 
       signIn({

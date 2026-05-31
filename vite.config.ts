@@ -6,4 +6,11 @@ import tsConfigPaths from "vite-tsconfig-paths";
 export default defineConfig({
   envPrefix: ["VITE_"],
   plugins: [react(), tsConfigPaths()],
+  build:{
+    minify: 'terser',
+    terserOptions: {
+      keep_classnames: true,
+      keep_fnames: true
+    }
+  }
 });

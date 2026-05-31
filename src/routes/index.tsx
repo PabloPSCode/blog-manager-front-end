@@ -21,7 +21,7 @@ export default function Routes() {
     }
 
     if (!jwt) {
-      setSessionLoading(false);
+      signOut();
       return;
     }
 

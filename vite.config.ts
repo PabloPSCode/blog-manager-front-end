@@ -11,6 +11,7 @@ export default defineConfig({
     terserOptions: {
       keep_classnames: true,
       keep_fnames: true
-    }
+    },
+    chunkSizeWarningLimit: 3000
   }
 });
